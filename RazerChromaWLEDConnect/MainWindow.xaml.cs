@@ -80,6 +80,8 @@ namespace ChromaBroadcastSampleApplication
                 // Start
                 if (_runAtBoot) Hide();
 
+                RzChromaBroadcastAPI.UnRegisterEventNotification();
+                RzChromaBroadcastAPI.UnInit();
                 RzResult lResult = RzChromaBroadcastAPI.Init(Guid.Parse(_appSettings.RazerAppId));
 
                 if (lResult == RzResult.Success)
@@ -156,7 +158,9 @@ namespace ChromaBroadcastSampleApplication
                 {
                     _totalLeds = state.leds.count;
                     TotalLeds.Content = _totalLeds.ToString();
-                } 
+                }
+
+                UpdateLabelWebsocketState("Connected");
             }
 
             TurnOn();
