@@ -27,3 +27,5 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 
 Right now this is working for me and I don't need it to do anything else at the moment. But maybe you find this useful and have other ideas. Just let me know and I'll see what I can do. Or just fork this and send me a PR.
 
+Could think of a few things.. like a better interface, more options for distribution of the lights. Maybe a websocket server so that we can hook more stuff up without having to write little apps like this for everything.
+
