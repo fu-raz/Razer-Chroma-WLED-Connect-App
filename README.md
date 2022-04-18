@@ -11,6 +11,7 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 
 * A valid working Razer App Id. You'll probably end up using another brand's app id. Be aware that I don't know if you can use the same id multiple times. So to be safe, use one of a brand you're not actually using in Razer Synapse
 * A WLED device with at least version 0.11.0. We use JSON commands over UDP, which was added in that version
+* Visual Studio 2022 Community Edition (The free one) to open this solution, download the packages via NuGet and build it for your computer
 
 ## What does it do?
 
