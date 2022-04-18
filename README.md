@@ -33,4 +33,6 @@ Right now this is working for me and I don't need it to do anything else at the 
 Could think of a few things.. like a better interface, more options for distribution of the lights. Maybe a websocket server so that we can hook more stuff up without having to write little apps like this for everything.
 
 ## Copyright stuff
+Do whatever you want with this app. Would be nice if you credited, but on the other hand.. this isn't much more than the sample app.
+This solution uses some packages found on NuGet
 [Led lighting icons created by Smashicons - Flaticon](https://www.flaticon.com/free-icons/led-lighting "led lighting icons")
