@@ -1,0 +1,91 @@
+﻿<Window x:Class="ChromaBroadcastSampleApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        mc:Ignorable="d"
+        Title="Razer Chroma WLED Connect" Width="347" Height="270" ResizeMode="NoResize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
+        Icon="/razer-wled.ico">
+    <Window.Resources>
+        <Style x:Key="Labels" TargetType="Label">
+            <Setter Property="Foreground" Value="#FFD62C72" />
+        </Style>
+        <Style x:Key="LedLabel" TargetType="Label">
+            <Setter Property="Foreground" Value="#ffffff" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="SmallLed" TargetType="Rectangle">
+            <Setter Property="Width" Value="62" />
+            <Setter Property="Height" Value="19" />
+        </Style>
+        <Style x:Key="LargeLed" TargetType="Rectangle">
+            <Setter Property="Width" Value="274" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="10,9">
+        <tb:TaskbarIcon IconSource="/razer-wled.ico" ToolTipText="Razer Chroma WLED Connect">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Show" Click="showApplication" />
+                    <MenuItem x:Name="ContextMenuItemSync" Header="Sync with Razer Connect" IsCheckable="True" Checked="contextMenuSyncWithRazerCheck" Unchecked="contextMenuSyncWithRazerUnCheck"/>
+                    <MenuItem x:Name="ContextMenuItemRunAtBoot" Header="Run at boot" IsCheckable="True" Checked="contextMenuRunAtBootCheck" Unchecked="contextMenuRunAtBootUnCheck"/>
+                    <Separator />
+                    <MenuItem x:Name="ContextMenuItemSettings" Header="Settings" Click="settingsShowWindow"/>
+                    <Separator />
+                    <MenuItem Header="Quit" Click="quitApplication" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+        <Label HorizontalAlignment="Center" Style="{StaticResource Labels}">Razer Chroma WLED Connect</Label>
+        <UniformGrid Rows="1">
+            <Label Style="{StaticResource LedLabel}">1</Label>
+            <Label Style="{StaticResource LedLabel}">2</Label>
+            <Label Style="{StaticResource LedLabel}">3</Label>
+            <Label Style="{StaticResource LedLabel}">4</Label>
+        </UniformGrid>
+        <UniformGrid Rows="1">
+            <Rectangle x:Name="CL2" Style="{StaticResource SmallLed}" Fill="#000000" />
+            <Rectangle x:Name="CL3" Style="{StaticResource SmallLed}" Fill="#000000" />
+            <Rectangle x:Name="CL4" Style="{StaticResource SmallLed}" Fill="#000000" />
+            <Rectangle x:Name="CL5" Style="{StaticResource SmallLed}" Fill="#000000" />
+        </UniformGrid>
+        <Grid Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Label Style="{StaticResource Labels}" Grid.Column="0">Sync Razer Chroma:</Label>
+            <CheckBox HorizontalAlignment="Right" x:Name="BroadcastEnabled" VerticalAlignment="Center" Margin="20,0,0,0" Grid.Column="1" Unchecked="syncWithRazerUnCheck" />
+        </Grid>
+        <Grid Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Label Style="{StaticResource Labels}" Grid.Column="0">Razer Chroma:</Label>
+            <Label x:Name="RazerState" Style="{StaticResource Labels}" Margin="20,0,0,0" Grid.Column="1" HorizontalAlignment="Right">Disconnected</Label>
+        </Grid>
+        <Grid Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Label Style="{StaticResource Labels}" Grid.Column="0">WLED:</Label>
+            <Label x:Name="WebsocketState" Style="{StaticResource Labels}" Margin="20,0,0,0" Grid.Column="1" HorizontalAlignment="Right">Disconnected</Label>
+        </Grid>
+        <Grid Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Label Style="{StaticResource Labels}" Grid.Column="0">Total LEDs:</Label>
+            <Label x:Name="TotalLeds" Style="{StaticResource Labels}" Margin="20,0,0,0" Grid.Column="1" HorizontalAlignment="Right">0</Label>
+        </Grid>
+        <Button HorizontalAlignment="Right" Click="buttonOpenSettingsMenu" Height="20" VerticalAlignment="Center">Settings</Button>
+
+    </StackPanel>
+</Window>
