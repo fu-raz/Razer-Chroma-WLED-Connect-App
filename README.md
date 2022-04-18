@@ -32,7 +32,9 @@ Right now this is working for me and I don't need it to do anything else at the 
 
 Could think of a few things.. like a better interface, more options for distribution of the lights. Maybe a websocket server so that we can hook more stuff up without having to write little apps like this for everything.
 
+Would be really awesome if we can get Razer to give WLED an official Razer App Id so we can make this an official Razer Chroma Connect App thing. Then the possibilities would be endless.
+
 ## Copyright stuff
-Do whatever you want with this app. Would be nice if you credited, but on the other hand.. this isn't much more than the sample app.
-This solution uses some packages found on NuGet
-[Led lighting icons created by Smashicons - Flaticon](https://www.flaticon.com/free-icons/led-lighting "led lighting icons")
+* Do whatever you want with this app. Would be awesome if you dropped a message if you're using it
+* This solution uses some packages found on NuGet
+* Icon: [Led lighting icons created by Smashicons - Flaticon](https://www.flaticon.com/free-icons/led-lighting "led lighting icons")
