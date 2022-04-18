@@ -32,3 +32,5 @@ Right now this is working for me and I don't need it to do anything else at the 
 
 Could think of a few things.. like a better interface, more options for distribution of the lights. Maybe a websocket server so that we can hook more stuff up without having to write little apps like this for everything.
 
+## Copyright stuff
+[Led lighting icons created by Smashicons - Flaticon](https://www.flaticon.com/free-icons/led-lighting led lighting icons)
