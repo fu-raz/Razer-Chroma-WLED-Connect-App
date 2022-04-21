@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="RazerChromaWLEDConnect.WLEDInstanceControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RazerChromaWLEDConnect"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="Labels" TargetType="Label">
+            <Setter Property="Foreground" Value="#FFD62C72" />
+        </Style>
+        <Style x:Key="GroupBoxes" TargetType="GroupBox">
+            <Setter Property="Foreground" Value="#FFD62C72" />
+        </Style>
+        <Style x:Key="CheckBoxes" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#FFD62C72" />
+        </Style>
+    </UserControl.Resources>
+    <GroupBox x:Name="templateGroup" Style="{StaticResource GroupBoxes}" FontWeight="Bold" BorderBrush="#00000000" Margin="5,5,5,5" BorderThickness="0">
+        <GroupBox.Header>WLED Instance</GroupBox.Header>
+        <GroupItem>
+            <StackPanel>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.75*"/>
+                        <ColumnDefinition Width="1.25*"/>
+                        <ColumnDefinition Width="0.5*"/>
+                        <ColumnDefinition Width="0.5*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Style="{StaticResource Labels}" FontWeight="Normal" Content="Enable"/>
+                    <CheckBox Grid.Column="1" x:Name="instanceEnabled" VerticalAlignment="Center" IsChecked="{Binding Enabled}"></CheckBox>
+                    <Button x:Name="delete" Grid.Column="3" VerticalAlignment="Center" FontWeight="Normal" Content="Delete" Margin="65,0,0,0" Click="deleteInstance"/>
+                </Grid>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.75*"/>
+                        <ColumnDefinition Width="0.75*"/>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Style="{StaticResource Labels}" FontWeight="Normal" Content="IP Address"/>
+                    <TextBox x:Name="instanceWledIPAddress" Grid.Column="1" Text="{Binding WLEDIPAddress}" VerticalAlignment="Center" FontWeight="Normal"/>
+                    <Label Grid.Column="2" HorizontalAlignment="Center" Style="{StaticResource Labels}" FontWeight="Normal" Content="Port"/>
+                    <TextBox x:Name="instanceWledPort" Grid.Column="3" Text="{Binding WLEDPort}" VerticalAlignment="Center" PreviewTextInput="NumberValidationTextBox" FontWeight="Normal"/>
+                    <Grid Grid.Column="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" HorizontalAlignment="Center" Style="{StaticResource Labels}" FontWeight="Normal" Content="Connected"/>
+                        <CheckBox Grid.Column="1" x:Name="IsConnectedLabel" VerticalAlignment="Center" IsEnabled="false" IsChecked="{Binding IsConnected}"/>
+
+                    </Grid>
+                </Grid>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.75*"/>
+                        <ColumnDefinition Width="1.25*"/>
+                        <ColumnDefinition Width="0.5*"/>
+                        <ColumnDefinition Width="0.5*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Style="{StaticResource Labels}" FontWeight="Normal" Content="LED Brightness"/>
+                    <Slider x:Name="instanceLEDBrightness" Maximum="255" Minimum="0" Grid.Column="1" SmallChange="1" VerticalAlignment="Center" Value="{Binding Brightness}"/>
+                    <Label Grid.Column="2" HorizontalAlignment="Center" Style="{StaticResource Labels}" FontWeight="Normal" Content="LEDs"/>
+                    <TextBox x:Name="instanceLedCount" Grid.Column="3" Text="{Binding LedCount}" VerticalAlignment="Center" PreviewTextInput="NumberValidationTextBox" FontWeight="Normal" IsEnabled="False"/>
+                </Grid>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.75*"/>
+                        <ColumnDefinition Width="1.25*"/>
+                        <ColumnDefinition Width="0.5*"/>
+                        <ColumnDefinition Width="0.5*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Style="{StaticResource Labels}" FontWeight="Normal" Content="Sync with"/>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="led1" Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 1" IsChecked="{Binding Led1}"/>
+                        <CheckBox x:Name="led2" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 2" IsChecked="{Binding Led2}"/>
+                        <CheckBox x:Name="led3" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 3" IsChecked="{Binding Led3}"/>
+                        <CheckBox x:Name="led4" Grid.Column="3" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 4" IsChecked="{Binding Led4}"/>
+                    </Grid>
+                    <CheckBox x:Name="instanceGradient" Grid.Column="3" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="Blend LEDs" IsChecked="{Binding Gradient}"/>
+                </Grid>
+                <Separator></Separator>
+            </StackPanel>
+        </GroupItem>
+    </GroupBox>
+</UserControl>

@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <RootNamespace>ChromaBroadcastSampleApplication</RootNamespace>
+    <RootNamespace>RazerChromaWLEDConnect</RootNamespace>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <ApplicationIcon>razer-wled.ico</ApplicationIcon>
   </PropertyGroup>
@@ -24,6 +24,19 @@
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Management" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="WLEDPreviewControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="WLEDPreviewControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>

@@ -17,24 +17,14 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.Threading;
 
-namespace ChromaBroadcastSampleApplication
+namespace RazerChromaWLEDConnect
 {
     public partial class MainWindow : Window
     {
         static readonly string AppName = "RazerChromaWLEDConnect";
 
-        protected UdpClient _udpClient;
-        protected IPEndPoint _ep;
-
-        protected string _wledIP;
-
-        protected TextBox _log;
-        protected Label _labelWebsocketState;
         protected Label _labelRazerState;
-        protected int _totalLeds;
-        protected bool _ledsOn = false;
-
-        protected AppSettings _appSettings;
+        protected AppSettings appSettings;
 
         private ManagementEventWatcher managementEventWatcher;
         private readonly Dictionary<string, string> powerValues = new Dictionary<string, string>
@@ -54,130 +44,66 @@ namespace ChromaBroadcastSampleApplication
             InitializeComponent();
 
             // Get Settings
-            _appSettings = AppSettings.Load();
-            _labelWebsocketState = WebsocketState;
+            this.appSettings = AppSettings.Load();
             _labelRazerState = RazerState;
-
-            if (rkApp.GetValue(AppName) == null)
-            {
-                _runAtBoot = false;
-                ContextMenuItemRunAtBoot.IsChecked = false;
-            }
-            else
-            {
-                _runAtBoot = true;
-                ContextMenuItemRunAtBoot.IsChecked = true;
-            }
-
+            ContextMenuItemRunAtBoot.IsChecked = (rkApp.GetValue(AppName) == null);
+            BroadcastEnabled.IsChecked = this.appSettings.Sync;
             Init();
         }
 
         public void Init()
         {
-            // Here we check if there are settings
-            if (_appSettings.RazerAppId != null && _appSettings.WledIPAddress != null)
+            // Clear instanced and add them again
+            wledInstances.Children.Clear();
+            for (int i = 1; i <= this.appSettings.Instances.Count; i++)
             {
-                // Start
+                WLEDInstance instance = this.appSettings.Instances[i - 1];
+                this.addWLEDInstanceControl(i, instance);
+                instance.load();
+            }
+
+            // Here we check if there are settings
+            if (this.appSettings.RazerAppId != null)
+            {
+                // TODO: Make this optional
                 if (_runAtBoot) Hide();
 
+                // TODO: Do this a little neater
                 RzChromaBroadcastAPI.UnRegisterEventNotification();
                 RzChromaBroadcastAPI.UnInit();
-                RzResult lResult = RzChromaBroadcastAPI.Init(Guid.Parse(_appSettings.RazerAppId));
 
+                // Initialize the Chrome Broadcast connection
+                RzResult lResult = RzChromaBroadcastAPI.Init(Guid.Parse(this.appSettings.RazerAppId));
                 if (lResult == RzResult.Success)
                 {
-                    _totalLeds = 15;
-                    TotalLeds.Content = _totalLeds.ToString();
-
-                    _wledIP = _appSettings.WledIPAddress;
-
+                    // Init successful
                     UpdateLabelRazerState("Initialization Success");
-
-                    BroadcastEnabled.IsChecked = true;
-                    ContextMenuItemSync.IsChecked = true;
-
-                    _udpClient = new UdpClient();
-
+                    // Start setting up the event
                     SetupEvents();
-                    Start();
-
                 }
                 else
                 {
+                    // Init unsuccessful. Razer App Id is already in use or is invalid
                     UpdateLabelRazerState("Invalid Razer App Id");
                 }
             }
             else
             {
-                if (_appSettings.RazerAppId == null)
-                {
-                    UpdateLabelRazerState("No Razer App Id");
-                }
-
-                if (_appSettings.WledIPAddress == null)
-                {
-                    UpdateLabelWebsocketState("No WLED IP");
-                }
+                UpdateLabelRazerState("No Razer App Id");
             }
+        }
+        private void addWLEDInstanceControl(int i, WLEDInstance instance)
+        {
+            WLEDPreviewControl wic = new WLEDPreviewControl(ref instance, i);
+            wledInstances.Children.Add(wic);
         }
 
         void SetupEvents()
         {
             // Hook into Razer 
             RzChromaBroadcastAPI.RegisterEventNotification(OnChromaBroadcastEvent);
-
-            _ep = new IPEndPoint(IPAddress.Parse(_appSettings.WledIPAddress), _appSettings.WledUDPPort);
-            _udpClient.Connect(_ep);
-
+            // Listen to windows going to sleep
             InitPowerEvents();
-        }
-
-        private void Start()
-        {
-            var WLEDStateObject = new
-            {
-                leds = new { count = 0, pwr = 0, fps = 0 }
-            };
-
-            string webUrl = $"http://{_wledIP}/json/info";
-            var httpRequest = (HttpWebRequest)WebRequest.Create(webUrl);
-            httpRequest.Accept = "application/json";
-
-            var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-            var httpResult = "";
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-            {
-                httpResult = streamReader.ReadToEnd();
-            }
-
-            var state = Newtonsoft.Json.JsonConvert.DeserializeAnonymousType(httpResult, WLEDStateObject);
-
-            if (state != null)
-            {
-                if (_totalLeds != state.leds.count)
-                {
-                    _totalLeds = state.leds.count;
-                    TotalLeds.Content = _totalLeds.ToString();
-                }
-
-                UpdateLabelWebsocketState("Connected");
-            }
-
-            TurnOn();
-        }
-
-        private void Stop()
-        {
-            TurnOff();
-            UpdateLabelWebsocketState("Disconnected");
-        }
-
-        private void UpdateLabelWebsocketState(string Text)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                _labelWebsocketState.Content = Text;
-            });
         }
 
         private void UpdateLabelRazerState(string Text)
@@ -188,44 +114,26 @@ namespace ChromaBroadcastSampleApplication
             });
         }
 
-        private void SendDataToWLEDUDP(WLEDSegment leds)
-        {
-            _udpClient.Send(leds.b, leds.b.Length);
-        }
-
-        private void TurnOn()
-        {
-            _ledsOn = true;
-            byte[] bytes = Encoding.UTF8.GetBytes($"{{\"on\":true, \"bri\":{_appSettings.LEDBrightness}, \"nl.mode\":0}}");
-            _udpClient.Send(bytes, bytes.Length);
-        }
-        private void TurnOff()
-        {
-            _ledsOn = false;
-            byte[] bytes = Encoding.UTF8.GetBytes("{\"on\":false}");
-            _udpClient.Send(bytes, bytes.Length);
-        }
-
         RzResult OnChromaBroadcastEvent(RzChromaBroadcastType type, RzChromaBroadcastStatus? status, RzChromaBroadcastEffect? effect)
         {
+            // The Razer Chroma Event listener
+            // This method gets triggered whenever Razer broadcasts something. This could be a color change or the disconnection of Chroma
             if (type == RzChromaBroadcastType.BroadcastEffect)
             {
                 Dispatcher.Invoke(() =>
                 {
                     if (BroadcastEnabled.IsChecked == true)
                     {
-                        if (!_ledsOn) TurnOn();
 
                         int[] color1 = { effect.Value.ChromaLink2.R, effect.Value.ChromaLink2.G, effect.Value.ChromaLink2.B };
                         int[] color2 = { effect.Value.ChromaLink3.R, effect.Value.ChromaLink3.G, effect.Value.ChromaLink3.B };
                         int[] color3 = { effect.Value.ChromaLink4.R, effect.Value.ChromaLink4.G, effect.Value.ChromaLink4.B };
                         int[] color4 = { effect.Value.ChromaLink5.R, effect.Value.ChromaLink5.G, effect.Value.ChromaLink5.B };
-                        var colors = new WLEDSegment(_totalLeds, color1, color2, color3, color4);
-
-                        // var jsonI = Newtonsoft.Json.JsonConvert.SerializeObject(colors);
-                        // var data = $"{{\"on\":true, \"seg\":{jsonI}}}";
-
-                        SendDataToWLEDUDP(colors);
+                        
+                        foreach(WLEDInstance wledInstance in this.appSettings.Instances)
+                        {
+                            wledInstance.sendColors(color1, color2, color3, color4);
+                        }
 
                         CL2.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink2.R, effect.Value.ChromaLink2.G, effect.Value.ChromaLink2.B));
                         CL3.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink3.R, effect.Value.ChromaLink3.G, effect.Value.ChromaLink3.B));
@@ -233,8 +141,8 @@ namespace ChromaBroadcastSampleApplication
                         CL5.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink5.R, effect.Value.ChromaLink5.G, effect.Value.ChromaLink5.B));
                     } else
                     {
-                        ContextMenuItemSync.IsChecked = false;
-                        Stop();
+                        // TODO: Move this somewhere better
+                        if (ContextMenuItemSync.IsChecked) ContextMenuItemSync.IsChecked = false;
                     }
                 });
             }
@@ -246,7 +154,6 @@ namespace ChromaBroadcastSampleApplication
                 }
                 else if (status == RzChromaBroadcastStatus.NotLive)
                 {
-                    Stop();
                     UpdateLabelRazerState("Disconnected");
                 }
             }
@@ -256,8 +163,14 @@ namespace ChromaBroadcastSampleApplication
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = true;
-            Hide();
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure you want to quit?", "Quit", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                this.Quit();
+            } else
+            {
+                e.Cancel = true;
+            }
         }
 
         public void InitPowerEvents()
@@ -279,41 +192,47 @@ namespace ChromaBroadcastSampleApplication
                 var name = powerValues.ContainsKey(pd.Value.ToString()) ? powerValues[pd.Value.ToString()] : pd.Value.ToString();
                 if (name == "Entering Suspend")
                 {
-                    Stop();
+                    for (int i = 0; i < this.appSettings.Instances.Count; i++)
+                    {
+                        WLEDInstance instance = this.appSettings.Instances[i];
+                        instance.turnOff();
+                    }
+                } else if (name == "Resume from Suspend")
+                {
+                    for (int i = 0; i < this.appSettings.Instances.Count; i++)
+                    {
+                        WLEDInstance instance = this.appSettings.Instances[i];
+                        instance.turnOn();
+                    }
                 }
             }
         }
 
-        private void contextMenuSyncWithRazerCheck(object sender, RoutedEventArgs e)
+        public void Quit()
         {
-            BroadcastEnabled.IsChecked = true;
-        }
-
-        private void contextMenuSyncWithRazerUnCheck(object sender, RoutedEventArgs e)
-        {
-            BroadcastEnabled.IsChecked = false;
-            Stop();
-        }
-
-        private void syncWithRazerUnCheck(object sender, RoutedEventArgs e)
-        {
-            Stop();
-        }
-
-        private void quitApplication(object sender, RoutedEventArgs e)
-        {
-            Stop();
             RzChromaBroadcastAPI.UnRegisterEventNotification();
             RzChromaBroadcastAPI.UnInit();
             if (managementEventWatcher != null) managementEventWatcher.Stop();
-            // End application, wish we didn't need this:
+
+            for (int i = 0; i < this.appSettings.Instances.Count; i++)
+            {
+                WLEDInstance instance = this.appSettings.Instances[i];
+                instance.unload();
+            }
+
             Thread.Sleep(1000);
             Application.Current.Shutdown();
         }
 
+        private void quitApplication(object sender, RoutedEventArgs e)
+        {
+            this.Quit();
+        }
+
         public void ShowWindow()
         {
-            Show();
+            this.Show();
+            this.WindowState = WindowState.Normal;
         }
 
         private void showApplication(object sender, RoutedEventArgs e)
@@ -321,31 +240,32 @@ namespace ChromaBroadcastSampleApplication
             ShowWindow();
         }
 
-        public void runOnBootEnable()
+        public void runOnBoot(bool enabled)
         {
-            rkApp.SetValue(AppName, Process.GetCurrentProcess().MainModule.FileName);
-            ContextMenuItemRunAtBoot.IsChecked = true;
-        }
+            if (enabled)
+            {
+                rkApp.SetValue(AppName, Process.GetCurrentProcess().MainModule.FileName);
+            } else
+            {
+                rkApp.DeleteValue(AppName, false);
+            }
 
-        public void runOnBootDisable()
-        {
-            rkApp.DeleteValue(AppName, false);
-            ContextMenuItemRunAtBoot.IsChecked = false;
+            ContextMenuItemRunAtBoot.IsChecked = enabled;
         }
 
         private void contextMenuRunAtBootCheck(object sender, RoutedEventArgs e)
         {
-            runOnBootEnable();
+            runOnBoot(true);
         }
 
         private void contextMenuRunAtBootUnCheck(object sender, RoutedEventArgs e)
         {
-            runOnBootDisable();
+            runOnBoot(false);
         }
 
         private void ShowSettings()
         {
-            SettingsWindow sw = new SettingsWindow(this, _appSettings, _runAtBoot);
+            SettingsWindow sw = new SettingsWindow(this, this.appSettings, _runAtBoot);
             sw.Show();
         }
 
@@ -354,9 +274,39 @@ namespace ChromaBroadcastSampleApplication
             ShowSettings();
         }
 
-        private void buttonOpenSettingsMenu(object sender, RoutedEventArgs e)
+        private void Sync(bool syncWithRazer)
         {
-            ShowSettings();
+            this.appSettings.Sync = syncWithRazer;
+            this.appSettings.Save();
+        }
+
+        private void syncWithRazer(object sender, RoutedEventArgs e)
+        {
+            this.Sync(true);
+        }
+        private void syncWithRazerUnCheck(object sender, RoutedEventArgs e)
+        {
+            this.Sync(false);
+        }
+
+        private void contextMenuSyncWithRazerCheck(object sender, RoutedEventArgs e)
+        {
+            this.Sync(true);
+            BroadcastEnabled.IsChecked = true;
+        }
+
+        private void contextMenuSyncWithRazerUnCheck(object sender, RoutedEventArgs e)
+        {
+            this.Sync(false);
+            BroadcastEnabled.IsChecked = false;
+        }
+
+        private void StateChange(object sender, EventArgs e)
+        {
+            if (this.WindowState == WindowState.Minimized)
+            {
+                Hide();
+            }
         }
     }
 }

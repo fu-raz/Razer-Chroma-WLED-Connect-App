@@ -17,7 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ChromaBroadcastSampleApplication
+namespace RazerChromaWLEDConnect
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
@@ -25,17 +25,20 @@ namespace ChromaBroadcastSampleApplication
     public partial class SettingsWindow : Window
     {
         protected MainWindow _win;
-        protected AppSettings _appSettings;
+        protected AppSettings appSettings;
         public SettingsWindow(MainWindow win, AppSettings appSettings, bool settingStartOnBoot)
         {
             _win = win;
-            _appSettings = appSettings;
+            this.appSettings = appSettings;
 
             InitializeComponent();
             if (settingStartOnBoot) settingsStartOnBootCheckbox.IsChecked = true;
-            settingsRazerAppId.Text = _appSettings.RazerAppId;
-            settingsWledIPAddress.Text = _appSettings.WledIPAddress;
-            settingsLEDBrightness.Value = _appSettings.LEDBrightness;
+            settingsRazerAppId.Text = this.appSettings.RazerAppId;
+            for(int i = 1; i <= this.appSettings.Instances.Count; i++)
+            {
+                WLEDInstance instance = this.appSettings.Instances[i - 1];
+                addWLEDInstanceControl(i, instance);
+            }
         }
 
         public void ShowSettings()
@@ -45,13 +48,18 @@ namespace ChromaBroadcastSampleApplication
 
         private void settingsSave(object sender, RoutedEventArgs e)
         {
-            _appSettings.RazerAppId = settingsRazerAppId.Text;
-            _appSettings.WledIPAddress = settingsWledIPAddress.Text;
-            _appSettings.WledUDPPort = int.Parse(settingsWledPort.Text);
-            _appSettings.LEDBrightness = (int)settingsLEDBrightness.Value;
-            _appSettings.Save();
+            bool shouldReInit = false;
 
-            _win.Init();
+            if (this.appSettings.RazerAppId != settingsRazerAppId.Text)
+            {
+                this.appSettings.RazerAppId = settingsRazerAppId.Text;
+                shouldReInit = true;
+            }
+
+            this.appSettings.Save();
+
+            if (shouldReInit) _win.Init();
+
             Hide();
         }
 
@@ -61,14 +69,35 @@ namespace ChromaBroadcastSampleApplication
             e.Handled = regex.IsMatch(e.Text);
         }
 
+        private void addWLEDInstanceControl(int i, WLEDInstance instance)
+        {
+            WLEDInstanceControl wic = new WLEDInstanceControl(ref instance, this, i);
+            wledInstances.Children.Add(wic);
+        }
+
+        private void addInstance(object sender, RoutedEventArgs e)
+        {
+            WLEDInstance i = new WLEDInstance();
+            this.appSettings.Instances.Add(i);
+            addWLEDInstanceControl(this.appSettings.Instances.Count, i);
+            this.appSettings.Save();
+        }
         private void checkboxRunAtBootEnable(object sender, RoutedEventArgs e)
         {
-            _win.runOnBootEnable();
+            _win.runOnBoot(true);
         }
 
         private void checkboxRunAtBootDisable(object sender, RoutedEventArgs e)
         {
-            _win.runOnBootDisable();
+            _win.runOnBoot(false);
+        }
+
+        public void deleteInstance(WLEDInstanceControl instanceControl)
+        {
+            // Find the instance 
+            this.appSettings.Instances.Remove(instanceControl.getInstance());
+            this.appSettings.Save();
+            wledInstances.Children.Remove(instanceControl);
         }
     }
 }

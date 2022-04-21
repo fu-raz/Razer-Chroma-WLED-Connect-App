@@ -1,12 +1,12 @@
-﻿<Window x:Class="ChromaBroadcastSampleApplication.MainWindow"
+﻿<Window x:Class="RazerChromaWLEDConnect.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
-        Title="Razer Chroma WLED Connect" Width="347" Height="270" ResizeMode="NoResize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
-        Icon="/razer-wled.ico">
+        Title="Razer Chroma WLED Connect" Width="347" Height="391" ResizeMode="CanMinimize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
+        Icon="/razer-wled.ico" StateChanged="StateChange">
     <Window.Resources>
         <Style x:Key="Labels" TargetType="Label">
             <Setter Property="Foreground" Value="#FFD62C72" />
@@ -26,7 +26,7 @@
         </Style>
     </Window.Resources>
 
-    <StackPanel Margin="10,9">
+    <StackPanel Margin="10,9" RenderTransformOrigin="0.499,1.028">
         <tb:TaskbarIcon IconSource="/razer-wled.ico" ToolTipText="Razer Chroma WLED Connect">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
@@ -59,7 +59,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Label Style="{StaticResource Labels}" Grid.Column="0">Sync Razer Chroma:</Label>
-            <CheckBox HorizontalAlignment="Right" x:Name="BroadcastEnabled" VerticalAlignment="Center" Margin="20,0,0,0" Grid.Column="1" Unchecked="syncWithRazerUnCheck" />
+            <CheckBox HorizontalAlignment="Right" x:Name="BroadcastEnabled" VerticalAlignment="Center" Margin="20,0,0,0" Grid.Column="1" Unchecked="syncWithRazerUnCheck" Checked="syncWithRazer" />
         </Grid>
         <Grid Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
@@ -69,23 +69,10 @@
             <Label Style="{StaticResource Labels}" Grid.Column="0">Razer Chroma:</Label>
             <Label x:Name="RazerState" Style="{StaticResource Labels}" Margin="20,0,0,0" Grid.Column="1" HorizontalAlignment="Right">Disconnected</Label>
         </Grid>
-        <Grid Margin="0,5,0,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Style="{StaticResource Labels}" Grid.Column="0">WLED:</Label>
-            <Label x:Name="WebsocketState" Style="{StaticResource Labels}" Margin="20,0,0,0" Grid.Column="1" HorizontalAlignment="Right">Disconnected</Label>
-        </Grid>
-        <Grid Margin="0,5,0,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Label Style="{StaticResource Labels}" Grid.Column="0">Total LEDs:</Label>
-            <Label x:Name="TotalLeds" Style="{StaticResource Labels}" Margin="20,0,0,0" Grid.Column="1" HorizontalAlignment="Right">0</Label>
-        </Grid>
-        <Button HorizontalAlignment="Right" Click="buttonOpenSettingsMenu" Height="20" VerticalAlignment="Center">Settings</Button>
-
+        <Button HorizontalAlignment="Right" Click="settingsShowWindow" Height="20" VerticalAlignment="Center">Settings</Button>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0" VerticalAlignment="Stretch">
+            <StackPanel x:Name="wledInstances">
+            </StackPanel>
+        </ScrollViewer>
     </StackPanel>
 </Window>

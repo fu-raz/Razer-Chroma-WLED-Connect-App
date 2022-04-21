@@ -11,16 +11,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ChromaBroadcastSampleApplication
+namespace RazerChromaWLEDConnect
 {
     public class AppSettings
     {
         private static readonly string pathSettingsFile = System.AppDomain.CurrentDomain.BaseDirectory + "\\settings.xml";
 
         public string RazerAppId = null;
+        public bool Sync = false;
         public string WledIPAddress = null;
         public int WledUDPPort = 21324;
         public int LEDBrightness = 255;
+        public List<WLEDInstance> Instances;
         public void Save()
         {
             // if (!File.Exists(pathSettingsFile)) File.Create(pathSettingsFile);
