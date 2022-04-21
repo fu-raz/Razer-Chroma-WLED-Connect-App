@@ -53,14 +53,7 @@ namespace RazerChromaWLEDConnect
 
         public void Init()
         {
-            // Clear instanced and add them again
-            wledInstances.Children.Clear();
-            for (int i = 1; i <= this.appSettings.Instances.Count; i++)
-            {
-                WLEDInstance instance = this.appSettings.Instances[i - 1];
-                this.addWLEDInstanceControl(i, instance);
-                instance.load();
-            }
+            this.addWLEDInstances();
 
             // Here we check if there are settings
             if (this.appSettings.RazerAppId != null)
@@ -92,7 +85,19 @@ namespace RazerChromaWLEDConnect
                 UpdateLabelRazerState("No Razer App Id");
             }
         }
-        private void addWLEDInstanceControl(int i, WLEDInstance instance)
+
+        public void addWLEDInstances()
+        {
+            // Clear instanced and add them again
+            wledInstances.Children.Clear();
+            for (int i = 1; i <= this.appSettings.Instances.Count; i++)
+            {
+                WLEDInstance instance = this.appSettings.Instances[i - 1];
+                this.addWLEDInstancePreview(i, instance);
+                instance.load();
+            }
+        }
+        private void addWLEDInstancePreview(int i, WLEDInstance instance)
         {
             WLEDPreviewControl wic = new WLEDPreviewControl(ref instance, i);
             wledInstances.Children.Add(wic);

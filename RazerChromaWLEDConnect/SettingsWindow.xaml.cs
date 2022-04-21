@@ -81,6 +81,7 @@ namespace RazerChromaWLEDConnect
             this.appSettings.Instances.Add(i);
             addWLEDInstanceControl(this.appSettings.Instances.Count, i);
             this.appSettings.Save();
+            _win.addWLEDInstances();
         }
         private void checkboxRunAtBootEnable(object sender, RoutedEventArgs e)
         {
@@ -95,9 +96,14 @@ namespace RazerChromaWLEDConnect
         public void deleteInstance(WLEDInstanceControl instanceControl)
         {
             // Find the instance 
-            this.appSettings.Instances.Remove(instanceControl.getInstance());
-            this.appSettings.Save();
-            wledInstances.Children.Remove(instanceControl);
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure you want to delete this instance?", "Delete", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                this.appSettings.Instances.Remove(instanceControl.getInstance());
+                this.appSettings.Save();
+                wledInstances.Children.Remove(instanceControl);
+                _win.addWLEDInstances();
+            }
         }
     }
 }
