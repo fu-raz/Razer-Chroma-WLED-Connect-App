@@ -29,8 +29,6 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 
 ![razer-chroma-connect](https://user-images.githubusercontent.com/5355154/163829792-68effe51-7432-4366-a314-ee82a7ab7b64.jpg)
 
-![razer-studio-connected](https://user-images.githubusercontent.com/5355154/163833292-43d16d60-6489-4506-a27b-0bf22bbb87ed.jpg)
-
 ## What's next?
 
 Right now this is working for me and I don't need it to do anything else at the moment. But maybe you find this useful and have other ideas. Just let me know and I'll see what I can do. Or just fork this and send me a PR.
