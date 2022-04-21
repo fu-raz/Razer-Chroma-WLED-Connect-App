@@ -16,9 +16,12 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 ## What does it do?
 
 * Connect to Razer Synapse as a connected device. Razer sends 4 colors to the connected devices
-* This app uses these colors to fill the led strip with these colors and sends these color in real-time to a WLED device
+* This app uses these colors and sends them in real-time to (multiple) WLED devices
+  * You can change the brightness per strip
+  * You can sync, 1, 2, 3 or 4 colors per strip
+  * Colors can blend or not
 * You can set it to run on windows boot
-* You can change the brightness of the strip
+
 
 ![wled-razer-chroma](https://user-images.githubusercontent.com/5355154/164540937-87e77325-7673-4265-a8f1-117fd02ff635.jpg)
 
