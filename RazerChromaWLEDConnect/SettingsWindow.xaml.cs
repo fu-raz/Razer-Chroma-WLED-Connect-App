@@ -34,10 +34,13 @@ namespace RazerChromaWLEDConnect
             InitializeComponent();
             if (settingStartOnBoot) settingsStartOnBootCheckbox.IsChecked = true;
             settingsRazerAppId.Text = this.appSettings.RazerAppId;
-            for(int i = 1; i <= this.appSettings.Instances.Count; i++)
+            if (this.appSettings.Instances != null)
             {
-                WLEDInstance instance = this.appSettings.Instances[i - 1];
-                addWLEDInstanceControl(i, instance);
+                for (int i = 1; i <= this.appSettings.Instances.Count; i++)
+                {
+                    WLEDInstance instance = this.appSettings.Instances[i - 1];
+                    addWLEDInstanceControl(i, instance);
+                }
             }
         }
 

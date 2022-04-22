@@ -90,11 +90,14 @@ namespace RazerChromaWLEDConnect
         {
             // Clear instanced and add them again
             wledInstances.Children.Clear();
-            for (int i = 1; i <= this.appSettings.Instances.Count; i++)
+            if (this.appSettings.Instances != null)
             {
-                WLEDInstance instance = this.appSettings.Instances[i - 1];
-                this.addWLEDInstancePreview(i, instance);
-                instance.load();
+                for (int i = 1; i <= this.appSettings.Instances.Count; i++)
+                {
+                    WLEDInstance instance = this.appSettings.Instances[i - 1];
+                    this.addWLEDInstancePreview(i, instance);
+                    instance.load();
+                }
             }
         }
         private void addWLEDInstancePreview(int i, WLEDInstance instance)
