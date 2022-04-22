@@ -130,6 +130,8 @@ namespace RazerChromaWLEDConnect
             {
                 Dispatcher.Invoke(() =>
                 {
+                    if (ContextMenuItemSync.IsChecked != BroadcastEnabled.IsChecked) ContextMenuItemSync.IsChecked = (bool)BroadcastEnabled.IsChecked;
+
                     if (BroadcastEnabled.IsChecked == true)
                     {
 
@@ -147,10 +149,6 @@ namespace RazerChromaWLEDConnect
                         CL3.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink3.R, effect.Value.ChromaLink3.G, effect.Value.ChromaLink3.B));
                         CL4.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink4.R, effect.Value.ChromaLink4.G, effect.Value.ChromaLink4.B));
                         CL5.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink5.R, effect.Value.ChromaLink5.G, effect.Value.ChromaLink5.B));
-                    } else
-                    {
-                        // TODO: Move this somewhere better
-                        if (ContextMenuItemSync.IsChecked) ContextMenuItemSync.IsChecked = false;
                     }
                 });
             }
