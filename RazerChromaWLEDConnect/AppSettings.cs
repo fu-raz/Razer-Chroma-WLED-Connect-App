@@ -22,7 +22,7 @@ namespace RazerChromaWLEDConnect
         public string WledIPAddress = null;
         public int WledUDPPort = 21324;
         public int LEDBrightness = 255;
-        public List<WLEDInstance> Instances;
+        public List<WLEDInstance> Instances = new List<WLEDInstance>();
         public void Save()
         {
             // if (!File.Exists(pathSettingsFile)) File.Create(pathSettingsFile);
