@@ -22,11 +22,13 @@ namespace RazerChromaWLEDConnect
     {
         protected WLEDInstance  instanceObject;
         protected int num;
+        protected MainWindow mainWindow;
 
-        public WLEDPreviewControl(ref WLEDInstance instance, int num)
+        public WLEDPreviewControl(ref WLEDInstance instance, int num, MainWindow mainWindow)
         {
             this.instanceObject = instance;
             this.num = num;
+            this.mainWindow = mainWindow;
 
             InitializeComponent();
 
@@ -40,27 +42,31 @@ namespace RazerChromaWLEDConnect
         {
             if (e.PropertyName == "Colors")
             {
-                LinearGradientBrush brush = new LinearGradientBrush();
-                for (int i = 0; i < this.instanceObject.Colors.Count; i++)
+                if (this.mainWindow.WindowState != WindowState.Minimized)
                 {
-                    int[] color = this.instanceObject.Colors[i];
+                    LinearGradientBrush brush = new LinearGradientBrush();
+                    for (int i = 0; i < this.instanceObject.Colors.Count; i++)
+                    {
+                        int[] color = this.instanceObject.Colors[i];
 
-                    if (this.instanceObject.Gradient)
-                    {
-                        float offset = (float)1 / (this.instanceObject.Colors.Count - 1) * i;
-                        GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
-                        brush.GradientStops.Add(stop);
-                    } else
-                    {
-                        double offset = (double)1 / this.instanceObject.Colors.Count * i;
-                        GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
-                        brush.GradientStops.Add(stop);
-                        double offset2 = (double)1 / this.instanceObject.Colors.Count * (i + 1) - 0.00001;
-                        GradientStop stop2 = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset2);
-                        brush.GradientStops.Add(stop2);
+                        if (this.instanceObject.Gradient)
+                        {
+                            float offset = (float)1 / (this.instanceObject.Colors.Count - 1) * i;
+                            GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
+                            brush.GradientStops.Add(stop);
+                        }
+                        else
+                        {
+                            double offset = (double)1 / this.instanceObject.Colors.Count * i;
+                            GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
+                            brush.GradientStops.Add(stop);
+                            double offset2 = (double)1 / this.instanceObject.Colors.Count * (i + 1) - 0.00001;
+                            GradientStop stop2 = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset2);
+                            brush.GradientStops.Add(stop2);
+                        }
                     }
+                    Separator.Background = brush;
                 }
-                Separator.Background = brush;
             } else if (e.PropertyName == "Enabled" || e.PropertyName == "IsConnected")
             {
                 if (!this.instanceObject.Enabled)

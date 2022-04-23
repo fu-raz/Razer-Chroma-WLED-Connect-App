@@ -102,7 +102,7 @@ namespace RazerChromaWLEDConnect
         }
         private void addWLEDInstancePreview(int i, WLEDInstance instance)
         {
-            WLEDPreviewControl wic = new WLEDPreviewControl(ref instance, i);
+            WLEDPreviewControl wic = new WLEDPreviewControl(ref instance, i, this);
             wledInstances.Children.Add(wic);
         }
 
@@ -145,10 +145,13 @@ namespace RazerChromaWLEDConnect
                             wledInstance.sendColors(color1, color2, color3, color4);
                         }
 
-                        CL2.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink2.R, effect.Value.ChromaLink2.G, effect.Value.ChromaLink2.B));
-                        CL3.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink3.R, effect.Value.ChromaLink3.G, effect.Value.ChromaLink3.B));
-                        CL4.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink4.R, effect.Value.ChromaLink4.G, effect.Value.ChromaLink4.B));
-                        CL5.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink5.R, effect.Value.ChromaLink5.G, effect.Value.ChromaLink5.B));
+                        if (this.WindowState != WindowState.Minimized)
+                        {
+                            CL2.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink2.R, effect.Value.ChromaLink2.G, effect.Value.ChromaLink2.B));
+                            CL3.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink3.R, effect.Value.ChromaLink3.G, effect.Value.ChromaLink3.B));
+                            CL4.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink4.R, effect.Value.ChromaLink4.G, effect.Value.ChromaLink4.B));
+                            CL5.Fill = new SolidColorBrush(Color.FromRgb(effect.Value.ChromaLink5.R, effect.Value.ChromaLink5.G, effect.Value.ChromaLink5.B));
+                        }
                     }
                 });
             }

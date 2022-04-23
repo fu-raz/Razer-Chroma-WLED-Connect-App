@@ -239,10 +239,33 @@ namespace RazerChromaWLEDConnect
             {
                 if (!this.IsOn) this.turnOn();
 
-                List<int[]> leds = getLEDs(color1, color2, color3, color4);
+                List<int[]> colors = new List<int[]>();
 
-                // Send the real-time data over UDP
-                byte[] colorBytes = getUDPBytes(leds);
+                // Add LEDs to the list
+                if (Led1) colors.Add(color1);
+                if (Led2) colors.Add(color2);
+                if (Led3) colors.Add(color3);
+                if (Led4) colors.Add(color4);
+
+                // Update colors of interface
+                this.Colors = colors;
+
+                byte[] colorBytes;
+
+                // Get the leds
+                List<int[]> leds = this.getLEDs(colors);
+
+                // Let's do some optimizing
+                if (color1.SequenceEqual(color2) && color1.SequenceEqual(color3) && color1.SequenceEqual(color4))
+                {
+                    // Use DRGB
+                    colorBytes = getUDPBytesDRGB(leds);
+                } else
+                {
+                    // Use WARLS
+                    colorBytes = getUDPBytes(leds);
+                }
+                
                 UdpClient conn = getUDPConnection();
 
                 if (conn != null)
@@ -252,19 +275,9 @@ namespace RazerChromaWLEDConnect
             }
         }
 
-        public List<int[]> getLEDs(int[] color1, int[] color2, int[] color3, int[] color4)
+        public List<int[]> getLEDs(List<int[]> colors)
         {
             List<int[]> leds = new List<int[]>();
-            List<int[]> colors = new List<int[]>();
-
-            // Add LEDs to the list
-            if (Led1) colors.Add(color1);
-            if (Led2) colors.Add(color2);
-            if (Led3) colors.Add(color3);
-            if (Led4) colors.Add(color4);
-
-            // Update colors
-            this.Colors = colors;
 
             if (colors.Count == 1)
             {
@@ -349,11 +362,26 @@ namespace RazerChromaWLEDConnect
             return leds;
         }
 
+        protected byte[] getUDPBytesDRGB(List<int[]> leds)
+        {
+            byte[] colorBytes = new byte[leds.Count * 3 + 2];
+            colorBytes[0] = 2;
+            colorBytes[1] = 255;
+
+            for (int i = 0; i < leds.Count; i++)
+            {
+                colorBytes[2 + i * 3] = (byte)leds[i][0];
+                colorBytes[3 + i * 3] = (byte)leds[i][1];
+                colorBytes[4 + i * 3] = (byte)leds[i][2];
+            }
+
+            return colorBytes;
+        }
         public byte[] getUDPBytes(List<int[]> leds)
         {
-            byte[] colorBytes = new byte[LedCount * 4 + 2];
+            byte[] colorBytes = new byte[leds.Count * 4 + 2];
             colorBytes[0] = 1;
-            colorBytes[1] = 1;
+            colorBytes[1] = 255;
 
             for (int i = 0; i < leds.Count; i++)
             {
