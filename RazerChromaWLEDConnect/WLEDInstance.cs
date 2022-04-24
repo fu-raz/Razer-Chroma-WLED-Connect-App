@@ -94,6 +94,11 @@ namespace RazerChromaWLEDConnect
             set { _colors = value; this.OnPropertyChanged("Colors"); }
         }
 
+        protected int[] lastColor1;
+        protected int[] lastColor2;
+        protected int[] lastColor3;
+        protected int[] lastColor4;
+
         UdpClient udpClient;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -110,6 +115,11 @@ namespace RazerChromaWLEDConnect
             if (Led2) this.Colors.Add(defaultColor);
             if (Led3) this.Colors.Add(defaultColor);
             if (Led4) this.Colors.Add(defaultColor);
+
+            this.lastColor1 = defaultColor;
+            this.lastColor2 = defaultColor;
+            this.lastColor3 = defaultColor;
+            this.lastColor4 = defaultColor;
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -241,36 +251,68 @@ namespace RazerChromaWLEDConnect
 
                 List<int[]> colors = new List<int[]>();
 
+                // Should update?
+                bool shouldUpdate = false;
+
                 // Add LEDs to the list
-                if (Led1) colors.Add(color1);
-                if (Led2) colors.Add(color2);
-                if (Led3) colors.Add(color3);
-                if (Led4) colors.Add(color4);
-
-                // Update colors of interface
-                this.Colors = colors;
-
-                byte[] colorBytes;
-
-                // Get the leds
-                List<int[]> leds = this.getLEDs(colors);
-
-                // Let's do some optimizing
-                if (color1.SequenceEqual(color2) && color1.SequenceEqual(color3) && color1.SequenceEqual(color4))
+                if (Led1)
                 {
-                    // Use DRGB
-                    colorBytes = getUDPBytesDRGB(leds);
-                } else
-                {
-                    // Use WARLS
-                    colorBytes = getUDPBytes(leds);
+                    
+                    if (!color1.SequenceEqual(this.lastColor1))
+                    {
+                        colors.Add(color1);
+                        shouldUpdate = true;
+                        this.lastColor1 = color1;
+                    }
                 }
-                
-                UdpClient conn = getUDPConnection();
-
-                if (conn != null)
+                if (Led2)
                 {
-                    conn.Send(colorBytes, colorBytes.Length);
+                    if (!color2.SequenceEqual(this.lastColor2))
+                    {
+                        colors.Add(color2);
+                        shouldUpdate = true;
+                        this.lastColor2 = color2;
+                    }
+                }
+                if (Led3)
+                {
+                    if (!color3.SequenceEqual(this.lastColor3))
+                    {
+                        colors.Add(color3);
+                        shouldUpdate = true;
+                        this.lastColor3 = color3;
+                    }
+                }
+                if (Led4)
+                {
+                    if (!color4.SequenceEqual(this.lastColor4))
+                    {
+                        colors.Add(color4);
+                        shouldUpdate = true;
+                        this.lastColor4 = color4;
+                    }
+                }
+
+                if (shouldUpdate)
+                {
+                    // Update colors of interface
+                    this.Colors = colors;
+
+                    byte[] colorBytes;
+
+                    // Get the leds
+                    List<int[]> leds = this.getLEDs(colors);
+
+                    // Let's do some optimizing
+                    // I guess if we're always going to be sending all the LEDS, we might as well use DRGB all the time
+                    colorBytes = getUDPBytesDRGB(leds);
+
+                    UdpClient conn = getUDPConnection();
+
+                    if (conn != null)
+                    {
+                        conn.Send(colorBytes, colorBytes.Length);
+                    }
                 }
             }
         }
