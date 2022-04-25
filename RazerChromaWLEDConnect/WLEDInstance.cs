@@ -5,16 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace RazerChromaWLEDConnect
 {
     public class WLEDInstance : INotifyPropertyChanged
     {
         private bool _enabled = false;
-        public bool Enabled {
+        public bool Enabled
+        {
             get { return _enabled; }
             set { _enabled = value; this.OnPropertyChanged("Enabled"); }
         }
@@ -22,7 +21,7 @@ namespace RazerChromaWLEDConnect
         private int _ledCount = 30;
         public int LedCount
         {
-            get { return _ledCount; } 
+            get { return _ledCount; }
             set { _ledCount = value; this.OnPropertyChanged("LedCount"); }
         }
 
@@ -139,7 +138,8 @@ namespace RazerChromaWLEDConnect
                 try
                 {
                     this.udpClient.Connect(ep);
-                } catch
+                }
+                catch
                 {
                     this.udpClient.Dispose();
                     this.udpClient = null;
@@ -163,7 +163,7 @@ namespace RazerChromaWLEDConnect
                 }
             }
         }
-        
+
         public void turnOff()
         {
             if (this.Enabled && this.IsConnected && this.IsOn)
@@ -233,11 +233,13 @@ namespace RazerChromaWLEDConnect
                     {
                         this.turnOn();
                     }
-                } else
+                }
+                else
                 {
                     this.IsConnected = false;
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 this.IsConnected = false;
             }
@@ -257,7 +259,7 @@ namespace RazerChromaWLEDConnect
                 // Add LEDs to the list
                 if (Led1)
                 {
-                    
+
                     if (!color1.SequenceEqual(this.lastColor1))
                     {
                         colors.Add(color1);
@@ -389,7 +391,7 @@ namespace RazerChromaWLEDConnect
                     // If we have 3 colors and 15 LEDs
                     int ledsPerColor = (int)Math.Ceiling((float)this.LedCount / (float)colors.Count);
                     int currentLed = 0;
-                    foreach(int[] color in colors)
+                    foreach (int[] color in colors)
                     {
                         for (int i = 0; i < ledsPerColor; i++)
                         {

@@ -2,20 +2,9 @@
 // The Chroma Control Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace RazerChromaWLEDConnect
 {
@@ -26,13 +15,13 @@ namespace RazerChromaWLEDConnect
     {
         protected MainWindow _win;
         protected AppSettings appSettings;
-        public SettingsWindow(MainWindow win, AppSettings appSettings, bool settingStartOnBoot)
+        public SettingsWindow(MainWindow win, AppSettings appSettings)
         {
             _win = win;
             this.appSettings = appSettings;
 
             InitializeComponent();
-            if (settingStartOnBoot) settingsStartOnBootCheckbox.IsChecked = true;
+            if (this.appSettings.RunAtBoot) settingsStartOnBootCheckbox.IsChecked = true;
             settingsRazerAppId.Text = this.appSettings.RazerAppId;
             if (this.appSettings.Instances != null)
             {
@@ -62,6 +51,7 @@ namespace RazerChromaWLEDConnect
             this.appSettings.Save();
 
             if (shouldReInit) _win.Init();
+            _win.ContextMenuItemRunAtBoot.IsChecked = this.appSettings.RunAtBoot;
 
             Hide();
         }
@@ -88,12 +78,12 @@ namespace RazerChromaWLEDConnect
         }
         private void checkboxRunAtBootEnable(object sender, RoutedEventArgs e)
         {
-            _win.runOnBoot(true);
+            this.appSettings.RunAtBoot = true;
         }
 
         private void checkboxRunAtBootDisable(object sender, RoutedEventArgs e)
         {
-            _win.runOnBoot(false);
+            this.appSettings.RunAtBoot = false;
         }
 
         public void deleteInstance(WLEDInstanceControl instanceControl)

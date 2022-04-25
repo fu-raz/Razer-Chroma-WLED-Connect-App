@@ -2,27 +2,19 @@
 // The Chroma Control Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Windows;
-using System.Windows.Media;
 using ChromaBroadcast;
-using System.Windows.Controls;
-using System.Management;
+using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
-using Microsoft.Win32;
-using System.Diagnostics;
+using System.Management;
 using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace RazerChromaWLEDConnect
 {
     public partial class MainWindow : Window
     {
-        static readonly string AppName = "RazerChromaWLEDConnect";
-
         protected Label _labelRazerState;
         protected AppSettings appSettings;
 
@@ -36,9 +28,6 @@ namespace RazerChromaWLEDConnect
             {"18", "Resume Automatic"}
         };
 
-        protected RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-        protected bool _runAtBoot = false;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -46,7 +35,7 @@ namespace RazerChromaWLEDConnect
             // Get Settings
             this.appSettings = AppSettings.Load();
             _labelRazerState = RazerState;
-            ContextMenuItemRunAtBoot.IsChecked = (rkApp.GetValue(AppName) == null);
+            ContextMenuItemRunAtBoot.IsChecked = this.appSettings.RunAtBoot;
             BroadcastEnabled.IsChecked = this.appSettings.Sync;
             Init();
         }
@@ -59,7 +48,7 @@ namespace RazerChromaWLEDConnect
             if (this.appSettings.RazerAppId != null)
             {
                 // TODO: Make this optional
-                if (_runAtBoot) Hide();
+                if (this.appSettings.RunAtBoot) Hide();
 
                 // TODO: Do this a little neater
                 RzChromaBroadcastAPI.UnRegisterEventNotification();
@@ -139,8 +128,8 @@ namespace RazerChromaWLEDConnect
                         int[] color2 = { effect.Value.ChromaLink3.R, effect.Value.ChromaLink3.G, effect.Value.ChromaLink3.B };
                         int[] color3 = { effect.Value.ChromaLink4.R, effect.Value.ChromaLink4.G, effect.Value.ChromaLink4.B };
                         int[] color4 = { effect.Value.ChromaLink5.R, effect.Value.ChromaLink5.G, effect.Value.ChromaLink5.B };
-                        
-                        foreach(WLEDInstance wledInstance in this.appSettings.Instances)
+
+                        foreach (WLEDInstance wledInstance in this.appSettings.Instances)
                         {
                             wledInstance.sendColors(color1, color2, color3, color4);
                         }
@@ -176,7 +165,8 @@ namespace RazerChromaWLEDConnect
             if (messageBoxResult == MessageBoxResult.Yes)
             {
                 this.Quit();
-            } else
+            }
+            else
             {
                 e.Cancel = true;
             }
@@ -206,7 +196,8 @@ namespace RazerChromaWLEDConnect
                         WLEDInstance instance = this.appSettings.Instances[i];
                         instance.turnOff();
                     }
-                } else if (name == "Resume from Suspend")
+                }
+                else if (name == "Resume from Suspend")
                 {
                     for (int i = 0; i < this.appSettings.Instances.Count; i++)
                     {
@@ -249,32 +240,9 @@ namespace RazerChromaWLEDConnect
             ShowWindow();
         }
 
-        public void runOnBoot(bool enabled)
-        {
-            if (enabled)
-            {
-                rkApp.SetValue(AppName, Process.GetCurrentProcess().MainModule.FileName);
-            } else
-            {
-                rkApp.DeleteValue(AppName, false);
-            }
-
-            ContextMenuItemRunAtBoot.IsChecked = enabled;
-        }
-
-        private void contextMenuRunAtBootCheck(object sender, RoutedEventArgs e)
-        {
-            runOnBoot(true);
-        }
-
-        private void contextMenuRunAtBootUnCheck(object sender, RoutedEventArgs e)
-        {
-            runOnBoot(false);
-        }
-
         private void ShowSettings()
         {
-            SettingsWindow sw = new SettingsWindow(this, this.appSettings, _runAtBoot);
+            SettingsWindow sw = new SettingsWindow(this, this.appSettings);
             sw.Show();
         }
 
@@ -316,6 +284,18 @@ namespace RazerChromaWLEDConnect
             {
                 Hide();
             }
+        }
+
+        private void contextMenuRunAtBootCheck(object sender, RoutedEventArgs e)
+        {
+            this.appSettings.RunAtBoot = true;
+            this.appSettings.Save();
+        }
+
+        private void contextMenuRunAtBootUnCheck(object sender, RoutedEventArgs e)
+        {
+            this.appSettings.RunAtBoot = false;
+            this.appSettings.Save();
         }
     }
 }
