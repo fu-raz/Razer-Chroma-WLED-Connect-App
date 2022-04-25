@@ -47,7 +47,15 @@
             <StackPanel x:Name="wledInstances">
             </StackPanel>
         </ScrollViewer>
-        <Button x:Name="addInstanceButton" HorizontalAlignment="Center" Click="addInstance" Height="20" Margin="0,5,0,5" Width="125">Add WLED Instance</Button>
+        <Grid Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="findInstancesButton" Grid.Column="0" HorizontalAlignment="Center" Click="findInstances" Height="20" Margin="0,5,0,5" Width="125">Find WLED Instances</Button>
+            <Button x:Name="addInstanceButton" Grid.Column="1" HorizontalAlignment="Center" Click="addInstance" Height="20" Margin="0,5,0,5" Width="125">Add WLED Instance</Button>
+
+        </Grid>
         <Button x:Name="settingsSaveButton" HorizontalAlignment="Right" Click="settingsSave" Height="20" Margin="0,5,0,5" Width="41">Save</Button>
     </StackPanel>
 </Window>

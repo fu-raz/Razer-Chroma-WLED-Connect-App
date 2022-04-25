@@ -4,7 +4,9 @@
 
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using Tmds.MDns;
 
 namespace RazerChromaWLEDConnect
 {
@@ -96,6 +98,43 @@ namespace RazerChromaWLEDConnect
                 this.appSettings.Save();
                 wledInstances.Children.Remove(instanceControl);
                 _win.addWLEDInstances();
+            }
+        }
+
+        private bool discoveryMode = false;
+
+        private void findInstances(object sender, RoutedEventArgs e)
+        {
+            discoveryMode = !discoveryMode;
+            Button b = sender as Button;
+            if (b == null) return;
+
+            // Ok here we need to find the instances via mDNS
+            // Thank you Aircoookie
+            ServiceBrowser serviceBrowser = new ServiceBrowser();
+            serviceBrowser.ServiceAdded += this.OnServiceAdded;
+
+            if (discoveryMode)
+            {
+                //Start mDNS discovery
+                b.Content = "Searching... click to stop";
+                serviceBrowser.StartBrowse("_http._tcp");
+            }
+            else
+            {
+                //Stop mDNS discovery
+                b.Content = "Find WLED Instances";
+                serviceBrowser.StopBrowse();
+            }
+        }
+
+        private async void OnServiceAdded(object sender, ServiceAnnouncementEventArgs e)
+        {
+            var addr = (e.Announcement.Addresses.Count >= 1) ? e.Announcement.Addresses[0] : null;
+            if (addr != null)
+            {
+                string name = e.Announcement.Hostname;
+                MessageBox.Show(name);
             }
         }
     }
