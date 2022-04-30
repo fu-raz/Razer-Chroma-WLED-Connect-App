@@ -84,6 +84,21 @@ namespace RazerChromaWLEDConnect
             get { return _isConnected; }
             set { _isConnected = value; this.OnPropertyChanged("IsConnected"); }
         }
+
+        private string _macAddress;
+        public string MacAddress
+        {
+            get { return _macAddress; }
+            set { _macAddress = value; this.OnPropertyChanged("MacAddress"); }
+        }
+
+        private string _groupName;
+        public string GroupName
+        {
+            get { return _groupName; }
+            set { _groupName = value; this.OnPropertyChanged("GroupName"); }
+        }
+
         public bool IsOn = false;
 
         private List<int[]> _colors;
@@ -91,6 +106,27 @@ namespace RazerChromaWLEDConnect
         {
             get { return _colors; }
             set { _colors = value; this.OnPropertyChanged("Colors"); }
+        }
+
+        private List<WLEDSegment> _segments;
+        public List<WLEDSegment> Segments
+        {
+            get { return _segments; }
+            set { _segments = value; this.OnPropertyChanged("Segments"); }
+        }
+
+        private bool _colorTypeStrip = true;
+        public bool ColorTypeStrip
+        {
+            get { return _colorTypeStrip; }
+            set { _colorTypeStrip = value; this.OnPropertyChanged("ColorTypeStrip"); }
+        }
+
+        private bool _colorTypeSegment = false;
+        public bool ColorTypeSegment
+        {
+            get { return _colorTypeSegment; }
+            set { _colorTypeSegment = value; this.OnPropertyChanged("ColorTypeSegment"); }
         }
 
         protected int[] lastColor1;
@@ -119,6 +155,8 @@ namespace RazerChromaWLEDConnect
             this.lastColor2 = defaultColor;
             this.lastColor3 = defaultColor;
             this.lastColor4 = defaultColor;
+
+            this.GroupName = Guid.NewGuid().ToString();
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -196,17 +234,34 @@ namespace RazerChromaWLEDConnect
             }
         }
 
+        public string getUrl()
+        {
+            return $"http://{WLEDIPAddress}";
+        }
+
         public void load()
         {
             // Define the object we get from the JSON API
+
             var WLEDStateObject = new
             {
-                leds = new { count = 0, pwr = 0, fps = 0 }
+                state = new {
+                    on = false,
+                    seg = new List<WLEDSegment>()
+                },
+                info = new {
+                    leds = new { count = 0, pwr = 0, fps = 0 },
+                    name = "",
+                    udpport = _wledPort,
+                    vid = 0,
+                    mac = ""
+                }
             };
+
             // Create the json URL from the IP address
             try
             {
-                string webUrl = $"http://{WLEDIPAddress}/json/info";
+                string webUrl = $"{this.getUrl()}/json";
                 var httpRequest = (HttpWebRequest)WebRequest.Create(webUrl);
                 httpRequest.Accept = "application/json";
                 httpRequest.Timeout = 2000;
@@ -218,14 +273,29 @@ namespace RazerChromaWLEDConnect
                     httpResult = streamReader.ReadToEnd();
                 }
                 // Deserialize the JSON to the WLED State object
-                var state = Newtonsoft.Json.JsonConvert.DeserializeAnonymousType(httpResult, WLEDStateObject);
+                var wled = Newtonsoft.Json.JsonConvert.DeserializeAnonymousType(httpResult, WLEDStateObject);
                 // Check if we have a state object in the response
-                if (state != null)
+                if (wled != null)
                 {
-                    if (LedCount != state.leds.count)
+                    // Get LED amount from JSON API
+                    if (this.LedCount != wled.info.leds.count)
                     {
-                        LedCount = state.leds.count;
+                        this.LedCount = wled.info.leds.count;
                     }
+
+                    // Get UDP port from JSON API
+                    if (this.WLEDPort != wled.info.udpport)
+                    {
+                        this.WLEDPort = wled.info.udpport;
+                    }
+
+                    // Get MAC Address for id from JSON API
+                    if (this.MacAddress != wled.info.mac)
+                    {
+                        this.MacAddress = wled.info.mac;
+                    }
+
+                    this.Segments = wled.state.seg;
 
                     this.IsConnected = true;
 
@@ -251,64 +321,98 @@ namespace RazerChromaWLEDConnect
             {
                 if (!this.IsOn) this.turnOn();
 
-                List<int[]> colors = new List<int[]>();
-
-                // Should update?
-                bool shouldUpdate = false;
-
-                // Add LEDs to the list
-                if (Led1)
+                if (this.ColorTypeStrip)
                 {
+                    List<int[]> colors = new List<int[]>();
 
-                    if (!color1.SequenceEqual(this.lastColor1))
+                    // Should update?
+                    bool shouldUpdate = false;
+
+                    // Add LEDs to the list
+                    // Here we optimize by checking if the new led color is the same as the previous color
+                    // If there's nothing to update, we don't update
+
+                    // TODO: We could keep track of all previous leds and only change the ones we need
+                    // if that's a realistic scenario
+                    if (this.Led1)
                     {
                         colors.Add(color1);
-                        shouldUpdate = true;
-                        this.lastColor1 = color1;
+                        if (!color1.SequenceEqual(this.lastColor1))
+                        {
+                            shouldUpdate = true;
+                            this.lastColor1 = color1;
+                        }
                     }
-                }
-                if (Led2)
-                {
-                    if (!color2.SequenceEqual(this.lastColor2))
+                    if (this.Led2)
                     {
                         colors.Add(color2);
-                        shouldUpdate = true;
-                        this.lastColor2 = color2;
+                        if (!color2.SequenceEqual(this.lastColor2))
+                        {
+                            shouldUpdate = true;
+                            this.lastColor2 = color2;
+                        }
                     }
-                }
-                if (Led3)
-                {
-                    if (!color3.SequenceEqual(this.lastColor3))
+                    if (this.Led3)
                     {
                         colors.Add(color3);
-                        shouldUpdate = true;
-                        this.lastColor3 = color3;
+                        if (!color3.SequenceEqual(this.lastColor3))
+                        {
+                            shouldUpdate = true;
+                            this.lastColor3 = color3;
+                        }
                     }
-                }
-                if (Led4)
-                {
-                    if (!color4.SequenceEqual(this.lastColor4))
+                    if (this.Led4)
                     {
                         colors.Add(color4);
-                        shouldUpdate = true;
-                        this.lastColor4 = color4;
+                        if (!color4.SequenceEqual(this.lastColor4))
+                        {
+                            shouldUpdate = true;
+                            this.lastColor4 = color4;
+                        }
                     }
-                }
 
-                if (shouldUpdate)
+                    if (shouldUpdate)
+                    {
+                        // Update colors of interface
+                        this.Colors = colors;
+
+                        byte[] colorBytes;
+
+                        // Get the leds
+                        List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
+
+                        // Let's do some optimizing
+                        // I guess if we're always going to be sending all the LEDS, we might as well use DRGB all the time
+                        colorBytes = getUDPBytesDRGB(leds);
+
+                        UdpClient conn = getUDPConnection();
+
+                        if (conn != null)
+                        {
+                            conn.Send(colorBytes, colorBytes.Length);
+                        }
+                    }
+                } else if (this.ColorTypeSegment)
                 {
-                    // Update colors of interface
-                    this.Colors = colors;
+                    List<int[]> leds = new List<int[]>();
+
+                    foreach (WLEDSegment wledSegment in this.Segments)
+                    {
+                        List<int[]> colors = new List<int[]>();
+                        if (wledSegment.Color1) colors.Add(color1);
+                        if (wledSegment.Color2) colors.Add(color2);
+                        if (wledSegment.Color3) colors.Add(color3);
+                        if (wledSegment.Color4) colors.Add(color4);
+
+                        List<int[]> segmentLeds = this.getLEDs(colors, wledSegment.len, wledSegment.Gradient);
+                        foreach (int[] segmentLed in segmentLeds)
+                        {
+                            leds.Add(segmentLed);
+                        }
+                    }
 
                     byte[] colorBytes;
-
-                    // Get the leds
-                    List<int[]> leds = this.getLEDs(colors);
-
-                    // Let's do some optimizing
-                    // I guess if we're always going to be sending all the LEDS, we might as well use DRGB all the time
                     colorBytes = getUDPBytesDRGB(leds);
-
                     UdpClient conn = getUDPConnection();
 
                     if (conn != null)
@@ -319,14 +423,14 @@ namespace RazerChromaWLEDConnect
             }
         }
 
-        public List<int[]> getLEDs(List<int[]> colors)
+        public List<int[]> getLEDs(List<int[]> colors, int ledCount, bool gradient)
         {
             List<int[]> leds = new List<int[]>();
 
             if (colors.Count == 1)
             {
                 // There's only one color, so all the LEDs get the same color
-                for (int led = 0; led < LedCount; led++)
+                for (int led = 0; led < ledCount; led++)
                 {
                     leds.Add(colors[0]);
                 }
@@ -334,7 +438,7 @@ namespace RazerChromaWLEDConnect
             else if (colors.Count > 1)
             {
                 // There are more colors
-                if (this.Gradient)
+                if (gradient)
                 {
                     // Are we blending the colors?
                     // Determine how many steps are in between the colors
@@ -344,12 +448,12 @@ namespace RazerChromaWLEDConnect
                     // If we have 3 colors and 15 LEDs that would be (15 - 3) / 2 = 6
                     // * - - - - * - - - - * - - - -
                     // If we have 4 colors and 15 LEDs that would be (15 - 4) / 3 ~ 4
-                    int ledsPerColor = (int)Math.Ceiling((float)(this.LedCount - colors.Count) / (colors.Count - 1));
+                    int ledsPerColor = (int)Math.Ceiling((float)(ledCount - colors.Count) / (colors.Count - 1));
 
                     // First color is always the first color
                     leds.Add(colors[0]);
 
-                    for (int led = 1; led < this.LedCount; led++)
+                    for (int led = 1; led < ledCount; led++)
                     {
                         int[] pushColor = new int[3];
 
@@ -389,7 +493,7 @@ namespace RazerChromaWLEDConnect
                     // If we have 4 colors and 15 LEDs
                     // * * * * * - - - - - + + + + +
                     // If we have 3 colors and 15 LEDs
-                    int ledsPerColor = (int)Math.Ceiling((float)this.LedCount / (float)colors.Count);
+                    int ledsPerColor = (int)Math.Ceiling((float)ledCount / (float)colors.Count);
                     int currentLed = 0;
                     foreach (int[] color in colors)
                     {
@@ -397,7 +501,7 @@ namespace RazerChromaWLEDConnect
                         {
                             leds.Add(color);
                             currentLed++;
-                            if (currentLed >= this.LedCount) break;
+                            if (currentLed >= ledCount) break;
                         }
                     }
                 }

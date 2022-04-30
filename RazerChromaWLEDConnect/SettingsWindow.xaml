@@ -5,34 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Razer Chroma WLED Connect Settings" Width="602" Height="388" ResizeMode="CanResize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222"
-        Icon="/razer-wled.ico">
-    <Window.Resources>
-        <Style x:Key="Labels" TargetType="Label">
-            <Setter Property="Foreground" Value="#FFD62C72" />
-        </Style>
-        <Style x:Key="LedLabel" TargetType="Label">
-            <Setter Property="Foreground" Value="#ffffff" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="SmallLed" TargetType="Rectangle">
-            <Setter Property="Width" Value="62" />
-            <Setter Property="Height" Value="19" />
-        </Style>
-        <Style x:Key="LargeLed" TargetType="Rectangle">
-            <Setter Property="Width" Value="274" />
-            <Setter Property="Height" Value="20" />
-            <Setter Property="Margin" Value="0,8,0,0" />
-        </Style>
-    </Window.Resources>
+        Icon="/razer-wled.ico" SizeChanged="resizeWindow">
+
     <StackPanel Margin="10,9">
-        <Label HorizontalAlignment="Center" Style="{StaticResource Labels}">Razer Chroma WLED Connect Settings</Label>
+        <Label HorizontalAlignment="Center" Style="{DynamicResource Labels}">Razer Chroma WLED Connect Settings</Label>
         
         <Grid Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Label Style="{StaticResource Labels}" Grid.Column="0">Start on Windows boot</Label>
+            <Label Style="{DynamicResource Labels}" Grid.Column="0">Start on Windows boot</Label>
             <CheckBox HorizontalAlignment="Right" x:Name="settingsStartOnBootCheckbox" VerticalAlignment="Center" Margin="20,0,0,0" Grid.Column="1" Checked="checkboxRunAtBootEnable" Unchecked="checkboxRunAtBootDisable" />
         </Grid>
         <Grid Margin="0,5,0,5">
@@ -43,7 +26,7 @@
             <Label Style="{StaticResource Labels}" Grid.Column="0">Razer App Id</Label>
             <TextBox x:Name="settingsRazerAppId" Grid.Column="1" Text="" VerticalAlignment="Center"></TextBox>
         </Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" Height="185">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="185" x:Name="wledScrollViewer">
             <StackPanel x:Name="wledInstances">
             </StackPanel>
         </ScrollViewer>

@@ -21,11 +21,8 @@ namespace RazerChromaWLEDConnect
 
         public string RazerAppId = null;
         public bool Sync = false;
-        public string WledIPAddress = null;
-        public int WledUDPPort = 21324;
-        public int LEDBrightness = 255;
-        public List<WLEDInstance> Instances = new List<WLEDInstance>();
         public bool RunAtBoot = false;
+        public List<WLEDInstance> Instances = new List<WLEDInstance>();
 
         static readonly string AppName = "RazerChromaWLEDConnect";
         protected RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);

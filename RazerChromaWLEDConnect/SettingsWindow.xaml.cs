@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Tmds.MDns;
+using System.Linq;
 
 namespace RazerChromaWLEDConnect
 {
@@ -15,14 +16,23 @@ namespace RazerChromaWLEDConnect
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        protected MainWindow _win;
+        protected MainWindow mainWindow;
         protected AppSettings appSettings;
+        private bool discoveryMode = false;
+
+        private double windowStartHeight = 0;
+        private double scrollBoxStartHeight = 0;
+
         public SettingsWindow(MainWindow win, AppSettings appSettings)
         {
-            _win = win;
+            this.mainWindow = win;
             this.appSettings = appSettings;
 
             InitializeComponent();
+
+            this.windowStartHeight = this.Height;
+            this.scrollBoxStartHeight = this.wledScrollViewer.Height;
+
             if (this.appSettings.RunAtBoot) settingsStartOnBootCheckbox.IsChecked = true;
             settingsRazerAppId.Text = this.appSettings.RazerAppId;
             if (this.appSettings.Instances != null)
@@ -52,8 +62,8 @@ namespace RazerChromaWLEDConnect
 
             this.appSettings.Save();
 
-            if (shouldReInit) _win.Init();
-            _win.ContextMenuItemRunAtBoot.IsChecked = this.appSettings.RunAtBoot;
+            if (shouldReInit) this.mainWindow.Init();
+            this.mainWindow.ContextMenuItemRunAtBoot.IsChecked = this.appSettings.RunAtBoot;
 
             Hide();
         }
@@ -70,13 +80,18 @@ namespace RazerChromaWLEDConnect
             wledInstances.Children.Add(wic);
         }
 
+        private void addInstance(WLEDInstance instance)
+        {
+            this.appSettings.Instances.Add(instance);
+            addWLEDInstanceControl(this.appSettings.Instances.Count, instance);
+            this.appSettings.Save();
+            this.mainWindow.addWLEDInstances();
+        }
+
         private void addInstance(object sender, RoutedEventArgs e)
         {
             WLEDInstance i = new WLEDInstance();
-            this.appSettings.Instances.Add(i);
-            addWLEDInstanceControl(this.appSettings.Instances.Count, i);
-            this.appSettings.Save();
-            _win.addWLEDInstances();
+            this.addInstance(i);
         }
         private void checkboxRunAtBootEnable(object sender, RoutedEventArgs e)
         {
@@ -97,11 +112,10 @@ namespace RazerChromaWLEDConnect
                 this.appSettings.Instances.Remove(instanceControl.getInstance());
                 this.appSettings.Save();
                 wledInstances.Children.Remove(instanceControl);
-                _win.addWLEDInstances();
+                this.mainWindow.addWLEDInstances();
             }
         }
 
-        private bool discoveryMode = false;
 
         private void findInstances(object sender, RoutedEventArgs e)
         {
@@ -133,8 +147,70 @@ namespace RazerChromaWLEDConnect
             var addr = (e.Announcement.Addresses.Count >= 1) ? e.Announcement.Addresses[0] : null;
             if (addr != null)
             {
-                string name = e.Announcement.Hostname;
-                MessageBox.Show(name);
+                // Fast way to check if it's a WLED. They have no TXT data
+                if (e.Announcement.Txt.Count > 0 && e.Announcement.Txt[0] == "")
+                {
+                    // Let's test if the is an actual WLED instance
+                    WLEDInstance testInstance = new WLEDInstance();
+                    testInstance.WLEDIPAddress = addr.ToString();
+                    testInstance.load();
+
+                    if (testInstance.IsConnected)
+                    {
+                        // This is an actual WLED instance
+                        // Check if one of this is one of the existing instances
+                        bool shouldAdd = true;
+
+                        foreach (WLEDInstance wi in this.appSettings.Instances)
+                        {
+                            // If we already have this mac address,
+                            // but the IP is different. We should change it
+                            if (wi.MacAddress == testInstance.MacAddress)
+                            {
+                                shouldAdd = false;
+
+                                if (wi.WLEDIPAddress != testInstance.WLEDIPAddress)
+                                {
+                                    wi.WLEDIPAddress = testInstance.WLEDIPAddress;
+                                }
+
+                                if (wi.WLEDPort != testInstance.WLEDPort)
+                                {
+                                    wi.WLEDPort = testInstance.WLEDPort;
+                                }
+
+                                wi.Segments = testInstance.Segments;
+
+                                // We found it, so BREAK BREAK!
+                                break;
+                            }
+                        }
+
+                        if (shouldAdd)
+                        {
+                            this.addInstance(testInstance);
+                        }
+
+                        // Save the new or changed settings
+                        this.appSettings.Save();
+                    }
+                }
+                
+                
+            }
+        }
+
+        private void resizeWindow(object sender, SizeChangedEventArgs e)
+        {
+            double newHeight = this.Height;
+            double diffHeight = newHeight - this.windowStartHeight;
+
+            if (diffHeight > 0)
+            {
+                this.wledScrollViewer.Height = this.scrollBoxStartHeight + diffHeight;
+            } else
+            {
+                this.wledScrollViewer.Height = this.scrollBoxStartHeight;
             }
         }
     }

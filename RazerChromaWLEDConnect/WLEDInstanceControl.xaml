@@ -6,17 +6,7 @@
              xmlns:local="clr-namespace:RazerChromaWLEDConnect"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" d:DesignWidth="800">
-    <UserControl.Resources>
-        <Style x:Key="Labels" TargetType="Label">
-            <Setter Property="Foreground" Value="#FFD62C72" />
-        </Style>
-        <Style x:Key="GroupBoxes" TargetType="GroupBox">
-            <Setter Property="Foreground" Value="#FFD62C72" />
-        </Style>
-        <Style x:Key="CheckBoxes" TargetType="CheckBox">
-            <Setter Property="Foreground" Value="#FFD62C72" />
-        </Style>
-    </UserControl.Resources>
+
     <GroupBox x:Name="templateGroup" Style="{StaticResource GroupBoxes}" FontWeight="Bold" BorderBrush="#00000000" Margin="5,5,5,5" BorderThickness="0">
         <GroupBox.Header>WLED Instance</GroupBox.Header>
         <GroupItem>
@@ -30,7 +20,8 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Style="{StaticResource Labels}" FontWeight="Normal" Content="Enable"/>
                     <CheckBox Grid.Column="1" x:Name="instanceEnabled" VerticalAlignment="Center" IsChecked="{Binding Enabled}"></CheckBox>
-                    <Button x:Name="delete" Grid.Column="3" VerticalAlignment="Center" FontWeight="Normal" Content="Delete" Margin="65,0,0,0" Click="deleteInstance"/>
+                    <Button x:Name="openBrowser" Grid.Column="2" VerticalAlignment="Center" FontWeight="Normal" Content="Open in Browser" Click="openInBrowser" Margin="5,0,5,0"/>
+                    <Button x:Name="delete" Grid.Column="3" VerticalAlignment="Center" FontWeight="Normal" Content="Delete" Click="deleteInstance"/>
                 </Grid>
                 <Grid Margin="0,5,0,5">
                     <Grid.ColumnDefinitions>
@@ -73,22 +64,54 @@
                         <ColumnDefinition Width="0.5*"/>
                         <ColumnDefinition Width="0.5*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Style="{StaticResource Labels}" FontWeight="Normal" Content="Sync with"/>
-                    <Grid Grid.Column="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <CheckBox x:Name="led1" Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 1" IsChecked="{Binding Led1}"/>
-                        <CheckBox x:Name="led2" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 2" IsChecked="{Binding Led2}"/>
-                        <CheckBox x:Name="led3" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 3" IsChecked="{Binding Led3}"/>
-                        <CheckBox x:Name="led4" Grid.Column="3" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="LED 4" IsChecked="{Binding Led4}"/>
-                    </Grid>
-                    <CheckBox x:Name="instanceGradient" Grid.Column="3" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="Blend LEDs" IsChecked="{Binding Gradient}"/>
                 </Grid>
-                <Separator></Separator>
+                <GroupBox>
+                    <GroupBox.Header>
+                        Sync options
+                    </GroupBox.Header>
+                    <GroupItem>
+                        <StackPanel Margin="5,5,5,5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.5*"/>
+                                    <ColumnDefinition Width="1.5*"/>
+                                </Grid.ColumnDefinitions>
+                                <RadioButton Grid.Column="0" FontWeight="Normal" Content="Whole strip" Style="{StaticResource RadioButtons}" GroupName="{Binding GroupName}" IsChecked="{Binding ColorTypeStrip}"/>
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.5*"/>
+                                        <ColumnDefinition Width="0.5*"/>
+                                        <ColumnDefinition Width="0.5*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox x:Name="led1" Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="Color 1" IsChecked="{Binding Led1}"/>
+                                        <CheckBox x:Name="led2" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="Color 2" IsChecked="{Binding Led2}"/>
+                                        <CheckBox x:Name="led3" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="Color 3" IsChecked="{Binding Led3}"/>
+                                        <CheckBox x:Name="led4" Grid.Column="3" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="Color 4" IsChecked="{Binding Led4}"/>
+                                    </Grid>
+                                    <CheckBox x:Name="instanceGradient" Grid.Column="3" VerticalAlignment="Center" Style="{StaticResource CheckBoxes}" FontWeight="Normal" Content="Blend LEDs" IsChecked="{Binding Gradient}"/>
+                                </Grid>
+                                
+                            </Grid>
+                            <Grid x:Name="perSegmentSelection" Margin="0,5,0,0" Visibility="Visible">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.50*"/>
+                                    <ColumnDefinition Width="1.5*"/>
+                                </Grid.ColumnDefinitions>
+                                <RadioButton Grid.Column="0" FontWeight="Normal" Content="Per segment" Style="{StaticResource RadioButtons}" GroupName="{Binding GroupName}" IsChecked="{Binding ColorTypeSegment}"/>
+                                <StackPanel Grid.Column="1" x:Name="segmentSyncList">
+                                    
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </GroupItem>    
+                </GroupBox>
             </StackPanel>
         </GroupItem>
     </GroupBox>

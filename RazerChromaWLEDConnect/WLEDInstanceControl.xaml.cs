@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,11 +31,43 @@ namespace RazerChromaWLEDConnect
             this.parentControl = parentControl;
             this.num = num;
 
+            if (num % 2 == 0)
+            {
+                this.Background = new SolidColorBrush(Color.FromArgb(20, 255, 255, 255));
+            }
+            else
+            {
+                this.Background = new SolidColorBrush(Color.FromArgb(10, 255, 255, 255));
+            }
+
             InitializeComponent();
+
+            if (this.instanceObject.Segments.Count <= 1)
+            {
+                this.perSegmentSelection.Visibility = Visibility.Collapsed;
+                this.instanceObject.ColorTypeStrip = true;
+            }
 
             this.DataContext = instance;
             templateGroup.Header = "WLED Instance #" + num.ToString();
             instance.load();
+
+            if (instance.Segments.Count > 0)
+            {
+                this.AddSegments();
+            }
+        }
+
+        private void AddSegments()
+        {
+            this.segmentSyncList.Children.Clear();
+
+            for (int i = 0; i < this.instanceObject.Segments.Count; i++)
+            {
+                WLEDSegment segment = this.instanceObject.Segments[i];
+                WLEDSegmentSyncColors wsc = new WLEDSegmentSyncColors(segment);
+                this.segmentSyncList.Children.Add(wsc);
+            }
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -77,5 +110,10 @@ namespace RazerChromaWLEDConnect
             this.saveInstance();
         }
 
+        private void openInBrowser(object sender, RoutedEventArgs e)
+        {
+            string url = this.instanceObject.getUrl();
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
     }
 }

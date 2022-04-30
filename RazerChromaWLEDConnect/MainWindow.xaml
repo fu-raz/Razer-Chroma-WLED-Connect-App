@@ -8,9 +8,7 @@
         Title="Razer Chroma WLED Connect" Width="347" Height="391" ResizeMode="CanMinimize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
         Icon="/razer-wled.ico" StateChanged="StateChange">
     <Window.Resources>
-        <Style x:Key="Labels" TargetType="Label">
-            <Setter Property="Foreground" Value="#FFD62C72" />
-        </Style>
+        
         <Style x:Key="LedLabel" TargetType="Label">
             <Setter Property="Foreground" Value="#ffffff" />
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -40,7 +38,7 @@
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
-        <Label HorizontalAlignment="Center" Style="{StaticResource Labels}">Razer Chroma WLED Connect</Label>
+        <Label HorizontalAlignment="Center" Style="{DynamicResource Labels}">Razer Chroma WLED Connect</Label>
         <UniformGrid Rows="1">
             <Label Style="{StaticResource LedLabel}">1</Label>
             <Label Style="{StaticResource LedLabel}">2</Label>
