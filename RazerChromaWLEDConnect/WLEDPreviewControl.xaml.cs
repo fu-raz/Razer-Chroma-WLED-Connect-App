@@ -40,30 +40,23 @@ namespace RazerChromaWLEDConnect
 
         private void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Colors")
+            if (e.PropertyName == "LEDs")
             {
                 if (this.mainWindow.WindowState != WindowState.Minimized)
                 {
                     LinearGradientBrush brush = new LinearGradientBrush();
-                    for (int i = 0; i < this.instanceObject.Colors.Count; i++)
+                    for (int i = 0; i < this.instanceObject.LEDs.Count; i++)
                     {
-                        int[] color = this.instanceObject.Colors[i];
+                        int[] color = this.instanceObject.LEDs[i];
 
-                        if (this.instanceObject.Gradient)
-                        {
-                            float offset = (float)1 / (this.instanceObject.Colors.Count - 1) * i;
-                            GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
-                            brush.GradientStops.Add(stop);
-                        }
-                        else
-                        {
-                            double offset = (double)1 / this.instanceObject.Colors.Count * i;
-                            GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
-                            brush.GradientStops.Add(stop);
-                            double offset2 = (double)1 / this.instanceObject.Colors.Count * (i + 1) - 0.00001;
-                            GradientStop stop2 = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset2);
-                            brush.GradientStops.Add(stop2);
-                        }
+                        double offset = 1.000 / (this.instanceObject.LEDs.Count - 1) * i;
+                        GradientStop stop = new GradientStop(Color.FromRgb(
+                            (byte)color[0],
+                            (byte)color[1],
+                            (byte)color[2]
+                        ), offset);
+
+                        brush.GradientStops.Add(stop);
                     }
                     Separator.Background = brush;
                 }

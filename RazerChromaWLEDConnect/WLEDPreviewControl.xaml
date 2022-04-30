@@ -32,7 +32,15 @@
                     <Label x:Name="ConnectionStatus" Grid.Column="1" Style="{StaticResource Labels}" FontWeight="Normal" Content="Disconnected" />
 
                 </Grid>
-                <Separator x:Name="Separator" Height="5" Margin="0,0,0,0" >
+                <Separator x:Name="Separator" Height="1" Margin="0,0,0,0" VerticalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" >
+                    <Separator.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="5"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Separator.RenderTransform>
                     <Separator.Background>
                         <LinearGradientBrush EndPoint="1,1" StartPoint="0,0" MappingMode="RelativeToBoundingBox" Opacity="1">
                             <GradientStop Color="Black"/>

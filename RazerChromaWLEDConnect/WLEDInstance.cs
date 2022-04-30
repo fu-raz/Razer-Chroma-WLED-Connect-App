@@ -101,11 +101,11 @@ namespace RazerChromaWLEDConnect
 
         public bool IsOn = false;
 
-        private List<int[]> _colors;
-        public List<int[]> Colors
+        private List<int[]> _leds;
+        public List<int[]> LEDs
         {
-            get { return _colors; }
-            set { _colors = value; this.OnPropertyChanged("Colors"); }
+            get { return _leds; }
+            set { _leds = value; this.OnPropertyChanged("LEDs"); }
         }
 
         private List<WLEDSegment> _segments;
@@ -145,11 +145,6 @@ namespace RazerChromaWLEDConnect
             defaultColor[0] = 0;
             defaultColor[1] = 0;
             defaultColor[2] = 0;
-
-            if (Led1) this.Colors.Add(defaultColor);
-            if (Led2) this.Colors.Add(defaultColor);
-            if (Led3) this.Colors.Add(defaultColor);
-            if (Led4) this.Colors.Add(defaultColor);
 
             this.lastColor1 = defaultColor;
             this.lastColor2 = defaultColor;
@@ -373,9 +368,6 @@ namespace RazerChromaWLEDConnect
 
                     if (shouldUpdate)
                     {
-                        // Update colors of interface
-                        this.Colors = colors;
-
                         byte[] colorBytes;
 
                         // Get the leds
@@ -506,6 +498,8 @@ namespace RazerChromaWLEDConnect
                     }
                 }
             }
+
+            this.LEDs = leds;
 
             return leds;
         }
