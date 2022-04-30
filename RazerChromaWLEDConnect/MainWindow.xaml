@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
-        Title="Razer Chroma WLED Connect" Width="347" Height="391" ResizeMode="CanMinimize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
+        Title="Razer Chroma WLED Connect" Width="347" Height="391" ResizeMode="CanResize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
         Icon="/razer-wled.ico" StateChanged="StateChange">
     <Window.Resources>
         

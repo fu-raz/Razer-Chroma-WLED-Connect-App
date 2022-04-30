@@ -49,14 +49,12 @@ namespace RazerChromaWLEDConnect
                     {
                         int[] color = this.instanceObject.LEDs[i];
 
-                        double offset = 1.000 / (this.instanceObject.LEDs.Count - 1) * i;
-                        GradientStop stop = new GradientStop(Color.FromRgb(
-                            (byte)color[0],
-                            (byte)color[1],
-                            (byte)color[2]
-                        ), offset);
-
+                        double offset = (double)1 / this.instanceObject.LEDs.Count * i;
+                        GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
                         brush.GradientStops.Add(stop);
+                        double offset2 = (double)1 / this.instanceObject.LEDs.Count * (i + 1) - 0.00001;
+                        GradientStop stop2 = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset2);
+                        brush.GradientStops.Add(stop2);
                     }
                     Separator.Background = brush;
                 }
