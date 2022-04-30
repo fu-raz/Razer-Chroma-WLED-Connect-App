@@ -290,7 +290,10 @@ namespace RazerChromaWLEDConnect
                         this.MacAddress = wled.info.mac;
                     }
 
-                    this.Segments = wled.state.seg;
+                    if (this.Segments.Count != wled.state.seg.Count)
+                    {
+                        this.Segments = wled.state.seg;
+                    }
 
                     this.IsConnected = true;
 
@@ -373,6 +376,7 @@ namespace RazerChromaWLEDConnect
                         // Get the leds
                         List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
 
+                        this.LEDs = leds;
                         // Let's do some optimizing
                         // I guess if we're always going to be sending all the LEDS, we might as well use DRGB all the time
                         colorBytes = getUDPBytesDRGB(leds);
@@ -402,6 +406,7 @@ namespace RazerChromaWLEDConnect
                             leds.Add(segmentLed);
                         }
                     }
+                    this.LEDs = leds;
 
                     byte[] colorBytes;
                     colorBytes = getUDPBytesDRGB(leds);
@@ -498,8 +503,6 @@ namespace RazerChromaWLEDConnect
                     }
                 }
             }
-
-            this.LEDs = leds;
 
             return leds;
         }

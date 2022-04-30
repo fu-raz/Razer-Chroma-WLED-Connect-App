@@ -27,6 +27,7 @@ namespace RazerChromaWLEDConnect
             InitializeComponent();
 
             this.DataContext = wledSegment;
+            this.SegmentTitle.Content = $"LED# {wledSegment.start.ToString()} - {wledSegment.stop.ToString()}";
         }
     }
 }

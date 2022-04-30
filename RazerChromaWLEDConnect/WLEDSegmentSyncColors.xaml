@@ -13,7 +13,7 @@
                 <ColumnDefinition Width="1.75*"/>
                 <ColumnDefinition Width="0.5*" />
             </Grid.ColumnDefinitions>
-            <Label Style="{StaticResource Labels}">Segment #1 Led 1 - 2</Label>
+            <Label Style="{StaticResource Labels}" x:Name="SegmentTitle">Segment #1 Led 1 - 2</Label>
         </Grid>
         <Grid>
             <Grid.ColumnDefinitions>

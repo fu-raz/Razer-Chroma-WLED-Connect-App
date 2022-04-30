@@ -14,31 +14,31 @@ namespace RazerChromaWLEDConnect
         public int len = 0;
         public bool rev = false;
 
-        private bool _color1 = false;
+        private bool _color1;
         public bool Color1
         {
             get { return _color1; }
             set { _color1 = value; this.OnPropertyChanged("Color1"); }
         }
-        private bool _color2 = false;
+        private bool _color2;
         public bool Color2
         {
             get { return _color2; }
             set { _color2 = value; this.OnPropertyChanged("Color2"); }
         }
-        private bool _color3 = false;
+        private bool _color3;
         public bool Color3
         {
             get { return _color3; }
             set { _color3 = value; this.OnPropertyChanged("Color3"); }
         }
-        private bool _color4 = false;
+        private bool _color4;
         public bool Color4
         {
             get { return _color4; }
             set { _color4 = value; this.OnPropertyChanged("Color4"); }
         }
-        private bool _gradient = true;
+        private bool _gradient;
         public bool Gradient
         {
             get { return _gradient; }
