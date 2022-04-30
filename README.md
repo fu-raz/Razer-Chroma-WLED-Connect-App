@@ -26,7 +26,7 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 
 ![wled-razer-chroma](https://user-images.githubusercontent.com/5355154/164540937-87e77325-7673-4265-a8f1-117fd02ff635.jpg)
 
-![wled-razer-chroma-settings](https://user-images.githubusercontent.com/5355154/164540944-e790d73f-0f4d-4db7-a789-e34e8a08f9bd.jpg)
+![razer-settings-preview](https://user-images.githubusercontent.com/5355154/166119165-9f2214ef-cb97-4236-befc-ec57644450c8.jpg)
 
 ![razer-chroma-connect](https://user-images.githubusercontent.com/5355154/163829792-68effe51-7432-4366-a314-ee82a7ab7b64.jpg)
 
