@@ -16,9 +16,10 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 ## What does it do?
 
 * Connect to Razer Synapse as a connected device. Razer sends 4 colors to the connected devices
-* This app uses these colors and sends them in real-time to (multiple) WLED devices
+* The app can find WLED installations via mDNS and automatically add/update them
+* This app uses the 4 Razer colors and sends them in real-time to (multiple) WLED devices
   * You can change the brightness per strip
-  * You can sync, 1, 2, 3 or 4 colors per strip
+  * You can sync, 1, 2, 3 or all 4 colors per strip or even per segment
   * Colors can blend or not
 * You can set it to run on windows boot
 
@@ -30,7 +31,6 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 ![razer-chroma-connect](https://user-images.githubusercontent.com/5355154/163829792-68effe51-7432-4366-a314-ee82a7ab7b64.jpg)
 
 ## What's next?
-
 Right now this is working for me and I don't need it to do anything else at the moment. But maybe you find this useful and have other ideas. Just let me know and I'll see what I can do. Or just fork this and send me a PR.
 
 Could think of a few things.. like a better interface, more options for distribution of the lights. Maybe a websocket server so that we can hook more stuff up without having to write little apps like this for everything.
@@ -41,3 +41,8 @@ Would be really awesome if we can get Razer to give WLED an official Razer App I
 * Do whatever you want with this app. Would be awesome if you dropped a message if you're using it
 * This solution uses some packages found on NuGet
 * Icon: [Led lighting icons created by Smashicons - Flaticon](https://www.flaticon.com/free-icons/led-lighting "led lighting icons")
+
+## Thanks
+* Thanks Jinx for testing the app
+* Aircoookie for WLED and help in the discourse group
+* Blazoncek for help pushing me down the UDP rabbit hole
