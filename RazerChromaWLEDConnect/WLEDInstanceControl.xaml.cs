@@ -42,7 +42,7 @@ namespace RazerChromaWLEDConnect
 
             InitializeComponent();
 
-            if (this.instanceObject.Segments.Count <= 1)
+            if (this.instanceObject.Segments == null || this.instanceObject.Segments.Count <= 1)
             {
                 this.perSegmentSelection.Visibility = Visibility.Collapsed;
                 this.instanceObject.ColorTypeStrip = true;
@@ -52,7 +52,7 @@ namespace RazerChromaWLEDConnect
             templateGroup.Header = "WLED Instance #" + num.ToString();
             instance.load();
 
-            if (instance.Segments.Count > 0)
+            if (instance.Segments != null && instance.Segments.Count > 0)
             {
                 this.AddSegments();
             }
