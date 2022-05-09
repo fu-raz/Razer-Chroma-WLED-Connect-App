@@ -115,5 +115,10 @@ namespace RazerChromaWLEDConnect
             string url = this.instanceObject.getUrl();
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
+
+        private void loadInstance(object sender, RoutedEventArgs e)
+        {
+            this.instanceObject.load();
+        }
     }
 }
