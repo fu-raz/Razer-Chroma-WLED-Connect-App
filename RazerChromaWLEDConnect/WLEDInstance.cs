@@ -108,7 +108,7 @@ namespace RazerChromaWLEDConnect
             set { _leds = value; this.OnPropertyChanged("LEDs"); }
         }
 
-        private List<WLEDSegment> _segments;
+        private List<WLEDSegment> _segments = new List<WLEDSegment>();
         public List<WLEDSegment> Segments
         {
             get { return _segments; }
@@ -128,6 +128,8 @@ namespace RazerChromaWLEDConnect
             get { return _colorTypeSegment; }
             set { _colorTypeSegment = value; this.OnPropertyChanged("ColorTypeSegment"); }
         }
+
+        protected long lastCheck = 0;
 
         protected int[] lastColor1;
         protected int[] lastColor2;
@@ -368,15 +370,19 @@ namespace RazerChromaWLEDConnect
                             this.lastColor4 = color4;
                         }
                     }
+                    
+                    // Get the leds for the preview window
+                    List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
+                    if (!this.LEDs.SequenceEqual(leds))
+                    {
+                        this.LEDs = leds;
+                    }
 
                     if (shouldUpdate)
                     {
                         byte[] colorBytes;
 
-                        // Get the leds
-                        List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
-
-                        this.LEDs = leds;
+                        
                         // Let's do some optimizing
                         // I guess if we're always going to be sending all the LEDS, we might as well use DRGB all the time
                         colorBytes = getUDPBytesDRGB(leds);
@@ -416,6 +422,21 @@ namespace RazerChromaWLEDConnect
                     {
                         conn.Send(colorBytes, colorBytes.Length);
                     }
+                }
+            } else if (this.Enabled)
+            {
+                // We should try every x seconds if we can connect to WLED
+                // could be that the connection dropped
+                // This sendColors function get fired very often
+
+                DateTimeOffset now = (DateTimeOffset)DateTime.UtcNow;
+                long timeStamp = now.ToUnixTimeSeconds();
+
+                // TODO: maybe make this a setting?
+                if (timeStamp - this.lastCheck >= 60)
+                {
+                    this.lastCheck = timeStamp;
+                    this.load();
                 }
             }
         }
