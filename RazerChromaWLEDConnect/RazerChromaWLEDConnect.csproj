@@ -35,6 +35,9 @@
     <Compile Update="Base\Controls\RGBSettingsControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Lenovo\Controls\LenovoKeyboardPreviewControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="WLED\Controls\WLEDPreviewControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -55,6 +58,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Base\Controls\RGBSettingsControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Lenovo\Controls\LenovoKeyboardPreviewControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

@@ -90,12 +90,12 @@ namespace RazerChromaWLEDConnect
                 for (int i = 1; i <= this.appSettings.Instances.Count; i++)
                 {
                     //WLED instance = this.appSettings.Instances[i - 1];
-                    this.addWLEDInstancePreview(i, this.appSettings.Instances[i - 1]);
+                    this.addInstancePreview(i, this.appSettings.Instances[i - 1]);
                     this.appSettings.Instances[i - 1].load();
                 }
             }
         }
-        private void addWLEDInstancePreview(int i, RGBSettingsInterface instance)
+        private void addInstancePreview(int i, RGBSettingsInterface instance)
         {
             RGBPreviewControl wic = new RGBPreviewControl(ref instance, this, i);
             wledInstances.Children.Add(wic);
@@ -112,6 +112,18 @@ namespace RazerChromaWLEDConnect
 
         private void addLenovoInstances()
         {
+            if (this.appSettings.Instances.Count > 0)
+            {
+                foreach (var instance in this.appSettings.Instances)
+                {
+                    if (instance is LenovoKeyboard)
+                    {
+                        this.addInstancePreview(0, instance);
+                        return;
+                    }
+                }
+            } 
+
             var devices = HidDeviceManager.GetManager().SearchDevices(0, 0);
             if (devices.Count > 0)
             {
@@ -124,35 +136,15 @@ namespace RazerChromaWLEDConnect
                     {
                         LenovoKeyboard k = new LenovoKeyboard();
 
-                        if (this.appSettings.Instances.Count > 0)
-                        {
-                            // Find if we already have a lenovo instance
-                            bool found = false;
-                            foreach (var instance in this.appSettings.Instances)
-                            {
-                                if (instance is LenovoKeyboard)
-                                {
-                                    found = true;
-                                }
-                            }
-                            if (!found)
-                            {
-                                this.appSettings.Instances.Add(k);
-                                this.appSettings.Save();
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            this.appSettings.Instances.Add(k);
-                            this.appSettings.Save();
-                            break;
-                        }
+                        this.appSettings.Instances.Add(k);
+                        this.appSettings.Save();
+
+                        this.addInstancePreview(0, k);
+                        break;
                     }
 
                     device.Disconnect();
                 }
-
             }
         }
 

@@ -26,14 +26,14 @@ namespace RazerChromaWLEDConnect
             var devices = HidDeviceManager.GetManager().SearchDevices(0, 0);
             if (devices.Count > 0)
             {
-                foreach (HidDevice device in devices)
+                foreach (HidDevice hidDevice in devices)
                 {
-                    device.Connect();
+                    hidDevice.Connect();
 
-                    if ((device.VendorId == 0x048d && device.ProductId == 0xc965 && device.UsagePage == 0xff89 && device.Usage == 0x00cc) ||
-                        (device.VendorId == 0x048d && device.ProductId == 0xc955 && device.UsagePage == 0xff89 && device.Usage == 0x00cc))
+                    if ((hidDevice.VendorId == 0x048d && hidDevice.ProductId == 0xc965 && hidDevice.UsagePage == 0xff89 && hidDevice.Usage == 0x00cc) ||
+                        (hidDevice.VendorId == 0x048d && hidDevice.ProductId == 0xc955 && hidDevice.UsagePage == 0xff89 && hidDevice.Usage == 0x00cc))
                     {
-                        this.hidDevice = device;
+                        this.hidDevice = hidDevice;
                         break;
                     }
                 }

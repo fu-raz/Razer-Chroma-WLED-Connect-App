@@ -35,7 +35,7 @@ namespace RazerChromaWLEDConnect.Base
 
             if (baseInstance is LenovoKeyboard)
             {
-                // TODO
+                this.Content = new LenovoKeyboardPreviewControl(ref baseInstance, num, parent);
             } else
             {
                 this.Content = new WLEDPreviewControl(ref baseInstance, num, parent);
