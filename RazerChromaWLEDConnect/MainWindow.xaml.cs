@@ -10,6 +10,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using HidApiAdapter;
+using RazerChromaWLEDConnect.Base;
+using RazerChromaWLEDConnect.WLED;
 
 namespace RazerChromaWLEDConnect
 {
@@ -17,6 +20,8 @@ namespace RazerChromaWLEDConnect
     {
         protected Label _labelRazerState;
         protected AppSettings appSettings;
+
+        protected HidDevice keyboardLenovo;
 
         private ManagementEventWatcher managementEventWatcher;
         private readonly Dictionary<string, string> powerValues = new Dictionary<string, string>
@@ -42,10 +47,11 @@ namespace RazerChromaWLEDConnect
 
         public void Init()
         {
+            this.addLenovoInstances();
             this.addWLEDInstances();
 
             // Here we check if there are settings
-            if (this.appSettings.RazerAppId != null)
+            if (this.appSettings.RazerAppId != null && this.appSettings.RazerAppId.Length > 0)
             {
                 // TODO: Make this optional
                 if (this.appSettings.RunAtBoot) Hide();
@@ -83,15 +89,15 @@ namespace RazerChromaWLEDConnect
             {
                 for (int i = 1; i <= this.appSettings.Instances.Count; i++)
                 {
-                    WLEDInstance instance = this.appSettings.Instances[i - 1];
-                    this.addWLEDInstancePreview(i, instance);
-                    instance.load();
+                    //WLED instance = this.appSettings.Instances[i - 1];
+                    this.addWLEDInstancePreview(i, this.appSettings.Instances[i - 1]);
+                    this.appSettings.Instances[i - 1].load();
                 }
             }
         }
-        private void addWLEDInstancePreview(int i, WLEDInstance instance)
+        private void addWLEDInstancePreview(int i, RGBSettingsInterface instance)
         {
-            WLEDPreviewControl wic = new WLEDPreviewControl(ref instance, i, this);
+            RGBPreviewControl wic = new RGBPreviewControl(ref instance, this, i);
             wledInstances.Children.Add(wic);
         }
 
@@ -99,8 +105,55 @@ namespace RazerChromaWLEDConnect
         {
             // Hook into Razer 
             RzChromaBroadcastAPI.RegisterEventNotification(OnChromaBroadcastEvent);
+
             // Listen to windows going to sleep
             InitPowerEvents();
+        }
+
+        private void addLenovoInstances()
+        {
+            var devices = HidDeviceManager.GetManager().SearchDevices(0, 0);
+            if (devices.Count > 0)
+            {
+                foreach (HidDevice device in devices)
+                {
+                    device.Connect();
+
+                    if ((device.VendorId == 0x048d && device.ProductId == 0xc965 && device.UsagePage == 0xff89 && device.Usage == 0x00cc) ||
+                        (device.VendorId == 0x048d && device.ProductId == 0xc955 && device.UsagePage == 0xff89 && device.Usage == 0x00cc))
+                    {
+                        LenovoKeyboard k = new LenovoKeyboard();
+
+                        if (this.appSettings.Instances.Count > 0)
+                        {
+                            // Find if we already have a lenovo instance
+                            bool found = false;
+                            foreach (var instance in this.appSettings.Instances)
+                            {
+                                if (instance is LenovoKeyboard)
+                                {
+                                    found = true;
+                                }
+                            }
+                            if (!found)
+                            {
+                                this.appSettings.Instances.Add(k);
+                                this.appSettings.Save();
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            this.appSettings.Instances.Add(k);
+                            this.appSettings.Save();
+                            break;
+                        }
+                    }
+
+                    device.Disconnect();
+                }
+
+            }
         }
 
         private void UpdateLabelRazerState(string Text)
@@ -129,9 +182,18 @@ namespace RazerChromaWLEDConnect
                         int[] color3 = { effect.Value.ChromaLink4.R, effect.Value.ChromaLink4.G, effect.Value.ChromaLink4.B };
                         int[] color4 = { effect.Value.ChromaLink5.R, effect.Value.ChromaLink5.G, effect.Value.ChromaLink5.B };
 
-                        foreach (WLEDInstance wledInstance in this.appSettings.Instances)
+                        foreach (RGBBase ledInstance in this.appSettings.Instances)
                         {
-                            wledInstance.sendColors(color1, color2, color3, color4);
+                            // TODO Has to be a better way to do this
+                            if (ledInstance is LenovoKeyboard)
+                            {
+                                LenovoKeyboard l = (LenovoKeyboard)ledInstance;
+                                l.sendColors(color1, color2, color3, color4);
+                            } else
+                            {
+                                WLEDModule l = (WLEDModule)ledInstance;
+                                l.sendColors(color1, color2, color3, color4);
+                            }
                         }
 
                         if (this.WindowState != WindowState.Minimized)
@@ -193,16 +255,14 @@ namespace RazerChromaWLEDConnect
                 {
                     for (int i = 0; i < this.appSettings.Instances.Count; i++)
                     {
-                        WLEDInstance instance = this.appSettings.Instances[i];
-                        instance.turnOff();
+                        this.appSettings.Instances[i].turnOff();
                     }
                 }
                 else if (name == "Resume from Suspend")
                 {
                     for (int i = 0; i < this.appSettings.Instances.Count; i++)
                     {
-                        WLEDInstance instance = this.appSettings.Instances[i];
-                        instance.turnOn();
+                        this.appSettings.Instances[i].turnOn();
                     }
                 }
             }
@@ -216,8 +276,7 @@ namespace RazerChromaWLEDConnect
 
             for (int i = 0; i < this.appSettings.Instances.Count; i++)
             {
-                WLEDInstance instance = this.appSettings.Instances[i];
-                instance.unload();
+                this.appSettings.Instances[i].unload();
             }
 
             Thread.Sleep(1000);

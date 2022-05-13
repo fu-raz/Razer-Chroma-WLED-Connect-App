@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Win32;
+using RazerChromaWLEDConnect.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,7 @@ using System.Xml.Serialization;
 
 namespace RazerChromaWLEDConnect
 {
+    [Serializable]
     public class AppSettings
     {
         private static readonly string pathSettingsFile = System.AppDomain.CurrentDomain.BaseDirectory + "\\settings.xml";
@@ -22,7 +24,10 @@ namespace RazerChromaWLEDConnect
         public string RazerAppId = null;
         public bool Sync = false;
         public bool RunAtBoot = false;
-        public List<WLEDInstance> Instances = new List<WLEDInstance>();
+
+        [XmlArray]
+        [XmlArrayItem("Instances")]
+        public List<RGBBase> Instances = new List<RGBBase>();
 
         static readonly string AppName = "RazerChromaWLEDConnect";
         protected RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);

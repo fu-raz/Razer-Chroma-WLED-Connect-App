@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Tmds.MDns;
 using System.Linq;
+using RazerChromaWLEDConnect.Base;
+using RazerChromaWLEDConnect.WLED;
 
 namespace RazerChromaWLEDConnect
 {
@@ -39,8 +41,7 @@ namespace RazerChromaWLEDConnect
             {
                 for (int i = 1; i <= this.appSettings.Instances.Count; i++)
                 {
-                    WLEDInstance instance = this.appSettings.Instances[i - 1];
-                    addWLEDInstanceControl(i, instance);
+                    this.addSettingsControl(i, this.appSettings.Instances[i - 1]);
                 }
             }
         }
@@ -74,23 +75,23 @@ namespace RazerChromaWLEDConnect
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void addWLEDInstanceControl(int i, WLEDInstance instance)
+        private void addSettingsControl(int i, RGBSettingsInterface instance)
         {
-            WLEDInstanceControl wic = new WLEDInstanceControl(ref instance, this, i);
-            wledInstances.Children.Add(wic);
+            RGBSettingsControl ctrl = new RGBSettingsControl(ref instance, this, i);
+            wledInstances.Children.Add(ctrl);
         }
 
-        private void addInstance(WLEDInstance instance)
+        private void addInstance(WLEDModule instance)
         {
             this.appSettings.Instances.Add(instance);
-            addWLEDInstanceControl(this.appSettings.Instances.Count, instance);
+            this.addSettingsControl(this.appSettings.Instances.Count, instance);
             this.appSettings.Save();
             this.mainWindow.addWLEDInstances();
         }
 
         private void addInstance(object sender, RoutedEventArgs e)
         {
-            WLEDInstance i = new WLEDInstance();
+            WLEDModule i = new WLEDModule();
             this.addInstance(i);
         }
         private void checkboxRunAtBootEnable(object sender, RoutedEventArgs e)
@@ -103,13 +104,13 @@ namespace RazerChromaWLEDConnect
             this.appSettings.RunAtBoot = false;
         }
 
-        public void deleteInstance(WLEDInstanceControl instanceControl)
+        public void deleteInstance(RGBSettingsControl instanceControl)
         {
             // Find the instance 
             MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure you want to delete this instance?", "Delete", System.Windows.MessageBoxButton.YesNo);
             if (messageBoxResult == MessageBoxResult.Yes)
             {
-                this.appSettings.Instances.Remove(instanceControl.getInstance());
+                this.appSettings.Instances.Remove((RGBBase)instanceControl.GetInstance());
                 this.appSettings.Save();
                 wledInstances.Children.Remove(instanceControl);
                 this.mainWindow.addWLEDInstances();
@@ -151,7 +152,7 @@ namespace RazerChromaWLEDConnect
                 if (e.Announcement.Txt.Count > 0 && e.Announcement.Txt[0] == "")
                 {
                     // Let's test if the is an actual WLED instance
-                    WLEDInstance testInstance = new WLEDInstance();
+                    WLEDModule testInstance = new WLEDModule();
                     testInstance.WLEDIPAddress = addr.ToString();
                     testInstance.load();
 
@@ -161,28 +162,32 @@ namespace RazerChromaWLEDConnect
                         // Check if one of this is one of the existing instances
                         bool shouldAdd = true;
 
-                        foreach (WLEDInstance wi in this.appSettings.Instances)
+                        foreach (RGBBase wi in this.appSettings.Instances)
                         {
-                            // If we already have this mac address,
-                            // but the IP is different. We should change it
-                            if (wi.MacAddress == testInstance.MacAddress)
+                            if (wi is WLEDModule)
                             {
-                                shouldAdd = false;
-
-                                if (wi.WLEDIPAddress != testInstance.WLEDIPAddress)
+                                WLEDModule wLED = (WLEDModule)wi;
+                                // If we already have this mac address,
+                                // but the IP is different. We should change it
+                                if (wLED.MacAddress == testInstance.MacAddress)
                                 {
-                                    wi.WLEDIPAddress = testInstance.WLEDIPAddress;
+                                    shouldAdd = false;
+
+                                    if (wLED.WLEDIPAddress != testInstance.WLEDIPAddress)
+                                    {
+                                        wLED.WLEDIPAddress = testInstance.WLEDIPAddress;
+                                    }
+
+                                    if (wLED.WLEDPort != testInstance.WLEDPort)
+                                    {
+                                        wLED.WLEDPort = testInstance.WLEDPort;
+                                    }
+
+                                    wLED.Segments = testInstance.Segments;
+
+                                    // We found it, so BREAK BREAK!
+                                    break;
                                 }
-
-                                if (wi.WLEDPort != testInstance.WLEDPort)
-                                {
-                                    wi.WLEDPort = testInstance.WLEDPort;
-                                }
-
-                                wi.Segments = testInstance.Segments;
-
-                                // We found it, so BREAK BREAK!
-                                break;
                             }
                         }
 

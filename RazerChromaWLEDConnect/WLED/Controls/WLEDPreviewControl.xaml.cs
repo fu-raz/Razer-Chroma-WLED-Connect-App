@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RazerChromaWLEDConnect.Base;
+using RazerChromaWLEDConnect.WLED;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,13 +22,13 @@ namespace RazerChromaWLEDConnect
     /// for now I just want it to work LOL
     public partial class WLEDPreviewControl : UserControl
     {
-        protected WLEDInstance  instanceObject;
+        protected WLEDModule instanceObject;
         protected int num;
         protected MainWindow mainWindow;
 
-        public WLEDPreviewControl(ref WLEDInstance instance, int num, MainWindow mainWindow)
+        public WLEDPreviewControl(ref RGBSettingsInterface instance, int num, MainWindow mainWindow)
         {
-            this.instanceObject = instance;
+            this.instanceObject = (WLEDModule)instance;
             this.num = num;
             this.mainWindow = mainWindow;
 

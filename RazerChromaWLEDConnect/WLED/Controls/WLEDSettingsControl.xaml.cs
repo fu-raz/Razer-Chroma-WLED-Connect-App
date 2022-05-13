@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RazerChromaWLEDConnect.Base;
+using RazerChromaWLEDConnect.WLED;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,15 +21,15 @@ namespace RazerChromaWLEDConnect
 {
     /// TODO: There is probably a MUCH better way to do this
     /// for now I just want it to work LOL
-    public partial class WLEDInstanceControl : UserControl
+    public partial class WLEDSettingsControl : UserControl
     {
-        protected WLEDInstance  instanceObject;
-        protected SettingsWindow parentControl;
+        protected WLEDModule instanceObject;
+        protected RGBSettingsControl parentControl;
         protected int num;
 
-        public WLEDInstanceControl(ref WLEDInstance instance, SettingsWindow parentControl, int num)
+        public WLEDSettingsControl(ref RGBSettingsInterface instance, RGBSettingsControl parentControl, int num)
         {
-            this.instanceObject = instance;
+            this.instanceObject = (WLEDModule)instance;
             this.parentControl = parentControl;
             this.num = num;
 
@@ -50,9 +52,9 @@ namespace RazerChromaWLEDConnect
 
             this.DataContext = instance;
             templateGroup.Header = "WLED Instance #" + num.ToString();
-            instance.load();
+            this.instanceObject.load();
 
-            if (instance.Segments != null && instance.Segments.Count > 0)
+            if (this.instanceObject.Segments != null && this.instanceObject.Segments.Count > 0)
             {
                 this.AddSegments();
             }
@@ -81,14 +83,14 @@ namespace RazerChromaWLEDConnect
             this.instanceObject.reload();
         }
 
-        public WLEDInstance getInstance()
+        public WLEDModule getInstance()
         {
             return this.instanceObject;
         }
 
         private void deleteInstance(object sender, RoutedEventArgs e)
         {
-            this.parentControl.deleteInstance(this);
+            this.parentControl.deleteInstance();
         }
 
         private void saveIPAddress(object sender, RoutedEventArgs e)
