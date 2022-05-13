@@ -1,17 +1,21 @@
-# Razer Chroma WLED Connect App
+# Razer Chroma WLED (and Lenovo Legion 5 Pro keyboard) Connect App
 We're all looking for the holy grail app that connects all our RGB devices together and syncs the colors between them. Or we just buy into a specific brand for their ecosystem. Sometimes brands do something really crazy and they open up their software to other manufacturers.
 
 Razer is one of those companies that opened up their ecosystem to other brands.. well sort of. They announced Razer Connect and a list of companies that would be able to connect directly with Razer Synapse. Well to this day most of the brands on that list haven't released apps that connect to the Razer Synapse software.
 
 I found this .NET wrapper for the Chroma Broadcast SDK here [Chroma Broadcast SDK .NET on GitHub](https://github.com/ChromaControl/ChromaBroadcastSDK.NET) with a sample application. To make it work, I needed an official Razer App Id. Which Razer wasn't going to give me. To use the app I made, you still need this Id and I can't provide you with one. Perhaps OpenChromaConnect still has them in their header files.
 
-As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addressable RGB LED strip. This app is the result.
+As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addressable RGB LED strip. This app is the result. Oh and I've added support for the Lenovo Legion 5 Pro RGB keyboard (the one with 4 LED segments from 2020 or 20201). Just for fun
 
 ## What do you need?
 
 * A valid working Razer App Id. You'll probably end up using another brand's app id. Be aware that I don't know if you can use the same id multiple times. So to be safe, use one of a brand you're not actually using in Razer Synapse
 * A WLED device with at least version 0.11.0. We use JSON commands over UDP, which was added in that version
 * Visual Studio 2022 Community Edition (The free one) to open this solution, download the packages via NuGet and build it for your computer
+* Install the required packages with NuGet
+* Don't forget to do this for the 32 and 64bit file:
+![50458730-72e65780-0976-11e9-9d46-1d4874083586](https://user-images.githubusercontent.com/5355154/168314251-287d0484-bfd3-491e-b4a2-8645e1bf16f0.png)
+
 
 ## What does it do?
 
@@ -46,3 +50,4 @@ Would be really awesome if we can get Razer to give WLED an official Razer App I
 * Thanks Jinx for testing the app
 * Aircoookie for WLED and help in the discourse group
 * Blazoncek for help pushing me down the UDP rabbit hole
+* nvchernov for HID API Adapter and accepting my pull request [nvchernov/hidapiadapter](https://github.com/nvchernov/hidapiadapter)
