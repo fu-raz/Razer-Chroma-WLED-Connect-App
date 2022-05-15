@@ -21,6 +21,7 @@ namespace RazerChromaWLEDConnect
         public new double Brightness { get { return _brightness; } set { _brightness = value; this.OnPropertyChanged("Brightness"); } }
 
         protected HidDevice hidDevice;
+
         public LenovoKeyboard()
         {
             var devices = HidDeviceManager.GetManager().SearchDevices(0, 0);
@@ -34,23 +35,15 @@ namespace RazerChromaWLEDConnect
                         (hidDevice.VendorId == 0x048d && hidDevice.ProductId == 0xc955 && hidDevice.UsagePage == 0xff89 && hidDevice.Usage == 0x00cc))
                     {
                         this.hidDevice = hidDevice;
+                        this.IsConnected = true;
                         break;
                     }
                 }
             }
         }
-        public new void sendColors(int[] color1, int[] color2, int[] color3, int[] color4)
+
+        protected void colorLEDS(List<int[]> leds)
         {
-            List<int[]> colors = new List<int[]>();
-
-            if (this.Led1) { colors.Add(color1); }
-            if (this.Led2) { colors.Add(color2); }
-            if (this.Led3) { colors.Add(color3); }
-            if (this.Led4) { colors.Add(color4); }
-
-            List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
-            this.LEDs = leds;
-
             byte[] lenovoColors = new byte[33] {
                 0xcc,
                 0x16,
@@ -71,7 +64,52 @@ namespace RazerChromaWLEDConnect
                 (byte)leds[3][2],
                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
             };
-            this.hidDevice.SendFeatureReport(lenovoColors);
+            if (this.hidDevice.IsConnected)
+            {
+                this.hidDevice.SendFeatureReport(lenovoColors);
+            }
+        }
+
+        public override void sendColors(int[] color1, int[] color2, int[] color3, int[] color4)
+        {
+            if (this.Enabled && this.IsConnected)
+            {
+                List<int[]> colors = new List<int[]>();
+
+                if (this.Led1) { colors.Add(color1); }
+                if (this.Led2) { colors.Add(color2); }
+                if (this.Led3) { colors.Add(color3); }
+                if (this.Led4) { colors.Add(color4); }
+
+                List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
+                this.LEDs = leds;
+                this.colorLEDS(leds);
+            }
+        }
+
+        public override void unload()
+        {
+            this.IsConnected = false;
+            List<int[]> leds = new List<int[]>();
+            for (int i = 0; i < this.LedCount; i++)
+            {
+                leds.Add(this.getBlack());
+            }
+            this.colorLEDS(leds);
+                
+            // this.hidDevice.Disconnect();
+        }
+
+        public override void load()
+        {
+            if (this.Enabled)
+            {
+                if (!this.hidDevice.IsConnected)
+                {
+                    this.hidDevice.Connect();
+                }
+                this.IsConnected = true;
+            }
         }
     }
 }

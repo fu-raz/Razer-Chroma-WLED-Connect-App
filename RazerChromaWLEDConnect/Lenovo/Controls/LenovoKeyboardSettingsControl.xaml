@@ -18,7 +18,7 @@
                         <ColumnDefinition Width="0.5*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Style="{StaticResource Labels}" FontWeight="Normal" Content="Enable"/>
-                    <CheckBox Grid.Column="1" x:Name="instanceEnabled" VerticalAlignment="Center" IsChecked="{Binding Enabled}"></CheckBox>
+                    <CheckBox Grid.Column="1" x:Name="instanceEnabled" VerticalAlignment="Center" IsChecked="{Binding Enabled}" Checked="checkboxEnabledChecked" Unchecked="checkboxEnabledUnchecked"></CheckBox>
                 </Grid>
                 
                 <Grid Margin="0,5,0,5">

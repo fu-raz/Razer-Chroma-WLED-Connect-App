@@ -27,14 +27,7 @@ namespace RazerChromaWLEDConnect.WLED
             get { return _wledPort; }
             set { _wledPort = value; OnPropertyChanged("WLEDPort"); }
         }
-
-        private bool _isConnected = false;
-        public bool IsConnected
-        {
-            get { return _isConnected; }
-            set { _isConnected = value; OnPropertyChanged("IsConnected"); }
-        }
-
+        
         private string _macAddress;
         public string MacAddress
         {
@@ -97,29 +90,29 @@ namespace RazerChromaWLEDConnect.WLED
 
         protected UdpClient getUDPConnection()
         {
-            if (udpClient == null)
+            if (this.udpClient == null)
             {
-                udpClient = new UdpClient();
-                IPEndPoint ep = new IPEndPoint(IPAddress.Parse(WLEDIPAddress), WLEDPort);
+                this.udpClient = new UdpClient();
+                IPEndPoint ep = new IPEndPoint(IPAddress.Parse(this.WLEDIPAddress), this.WLEDPort);
                 try
                 {
-                    udpClient.Connect(ep);
+                    this.udpClient.Connect(ep);
                 }
                 catch
                 {
-                    udpClient.Dispose();
-                    udpClient = null;
+                    this.udpClient.Dispose();
+                    this.udpClient = null;
                 }
             }
 
             return udpClient;
         }
 
-        public new void turnOn()
+        public override void turnOn()
         {
             if (Enabled && IsConnected && !IsOn)
             {
-                var state = new WLEDState(true, (int)Math.Round(_brightness), true);
+                WLEDState state = new WLEDState(true, (int)Math.Round(_brightness), true);
                 byte[] json = Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(state));
                 UdpClient conn = getUDPConnection();
                 if (conn != null)
@@ -130,29 +123,43 @@ namespace RazerChromaWLEDConnect.WLED
             }
         }
 
-        public new void turnOff()
+        public override void turnOff()
         {
             if (Enabled && IsConnected && IsOn)
             {
-                var state = new WLEDState(false, (int)Math.Round(_brightness), false);
+                // Get a byte list of black LEDS
+                List<int[]> blackLEDS = new List<int[]>();
+                for(int i = 0; i < this.LedCount; i++)
+                {
+                    blackLEDS.Add(this.getBlack());
+                }
+                // Get the black leds with timeout
+                byte[] black = this.getUDPBytesDRGB(blackLEDS, 1);
+
+                WLEDState state = new WLEDState(false, (int)Math.Round(_brightness), false);
                 byte[] json = Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(state));
-                UdpClient conn = getUDPConnection();
+
+                UdpClient conn = this.getUDPConnection();
                 if (conn != null)
                 {
+                    // Send black
+                    conn.Send(black, black.Length);
+                    // TODO: Get this from settings?
+                    // Turn off
                     conn.Send(json, json.Length);
                     IsOn = false;
                 }
             }
         }
 
-        public new void unload()
+        public override void unload()
         {
-            if (udpClient != null)
+            if (this.udpClient != null)
             {
-                if (IsOn) turnOff();
-                udpClient.Close();
-                udpClient.Dispose();
-                udpClient = null;
+                if (IsOn) this.turnOff();
+                this.udpClient.Close();
+                this.udpClient.Dispose();
+                this.udpClient = null;
             }
         }
 
@@ -161,7 +168,7 @@ namespace RazerChromaWLEDConnect.WLED
             return $"http://{WLEDIPAddress}";
         }
 
-        public new void load()
+        public override void load()
         {
             // Define the object we get from the JSON API
 
@@ -202,53 +209,53 @@ namespace RazerChromaWLEDConnect.WLED
                 if (wled != null)
                 {
                     // Get LED amount from JSON API
-                    if (LedCount != wled.info.leds.count)
+                    if (this.LedCount != wled.info.leds.count)
                     {
-                        LedCount = wled.info.leds.count;
+                        this.LedCount = wled.info.leds.count;
                     }
 
                     // Get UDP port from JSON API
-                    if (WLEDPort != wled.info.udpport)
+                    if (this.WLEDPort != wled.info.udpport)
                     {
-                        WLEDPort = wled.info.udpport;
+                        this.WLEDPort = wled.info.udpport;
                     }
 
                     // Get MAC Address for id from JSON API
-                    if (MacAddress != wled.info.mac)
+                    if (this.MacAddress != wled.info.mac)
                     {
-                        MacAddress = wled.info.mac;
+                        this.MacAddress = wled.info.mac;
                     }
 
-                    if (Segments == null || Segments.Count != wled.state.seg.Count)
+                    if (this.Segments == null || this.Segments.Count != wled.state.seg.Count)
                     {
-                        Segments = wled.state.seg;
+                        this.Segments = wled.state.seg;
                     }
 
-                    IsConnected = true;
+                    this.IsConnected = true;
 
-                    if (Enabled)
+                    if (this.Enabled)
                     {
-                        turnOn();
+                        this.turnOn();
                     }
                 }
                 else
                 {
-                    IsConnected = false;
+                    this.IsConnected = false;
                 }
             }
             catch (Exception ex)
             {
-                IsConnected = false;
+                this.IsConnected = false;
             }
         }
 
-        public new void sendColors(int[] color1, int[] color2, int[] color3, int[] color4)
+        public override void sendColors(int[] color1, int[] color2, int[] color3, int[] color4)
         {
-            if (IsConnected && Enabled)
+            if (this.IsConnected && this.Enabled)
             {
-                if (!IsOn) turnOn();
+                if (!this.IsOn) this.turnOn();
 
-                if (ColorTypeStrip)
+                if (this.ColorTypeStrip)
                 {
                     List<int[]> colors = new List<int[]>();
 
@@ -261,40 +268,40 @@ namespace RazerChromaWLEDConnect.WLED
 
                     // TODO: We could keep track of all previous leds and only change the ones we need
                     // if that's a realistic scenario
-                    if (Led1)
+                    if (this.Led1)
                     {
                         colors.Add(color1);
-                        if (!color1.SequenceEqual(lastColor1))
+                        if (!color1.SequenceEqual(this.lastColor1))
                         {
                             shouldUpdate = true;
-                            lastColor1 = color1;
+                            this.lastColor1 = color1;
                         }
                     }
-                    if (Led2)
+                    if (this.Led2)
                     {
                         colors.Add(color2);
-                        if (!color2.SequenceEqual(lastColor2))
+                        if (!color2.SequenceEqual(this.lastColor2))
                         {
                             shouldUpdate = true;
-                            lastColor2 = color2;
+                            this.lastColor2 = color2;
                         }
                     }
-                    if (Led3)
+                    if (this.Led3)
                     {
                         colors.Add(color3);
-                        if (!color3.SequenceEqual(lastColor3))
+                        if (!color3.SequenceEqual(this.lastColor3))
                         {
                             shouldUpdate = true;
-                            lastColor3 = color3;
+                            this.lastColor3 = color3;
                         }
                     }
-                    if (Led4)
+                    if (this.Led4)
                     {
                         colors.Add(color4);
-                        if (!color4.SequenceEqual(lastColor4))
+                        if (!color4.SequenceEqual(this.lastColor4))
                         {
                             shouldUpdate = true;
-                            lastColor4 = color4;
+                            this.lastColor4 = color4;
                         }
                     }
 
@@ -303,14 +310,14 @@ namespace RazerChromaWLEDConnect.WLED
                         byte[] colorBytes;
 
                         // Get the leds
-                        List<int[]> leds = getLEDs(colors, LedCount, Gradient);
+                        List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
 
-                        LEDs = leds;
+                        this.LEDs = leds;
                         // Let's do some optimizing
                         // I guess if we're always going to be sending all the LEDS, we might as well use DRGB all the time
-                        colorBytes = getUDPBytesDRGB(leds);
+                        colorBytes = this.getUDPBytesDRGB(leds);
 
-                        UdpClient conn = getUDPConnection();
+                        UdpClient conn = this.getUDPConnection();
 
                         if (conn != null)
                         {
@@ -318,11 +325,11 @@ namespace RazerChromaWLEDConnect.WLED
                         }
                     }
                 }
-                else if (ColorTypeSegment)
+                else if (this.ColorTypeSegment)
                 {
                     List<int[]> leds = new List<int[]>();
 
-                    foreach (WLEDSegment wledSegment in Segments)
+                    foreach (WLEDSegment wledSegment in this.Segments)
                     {
                         List<int[]> colors = new List<int[]>();
                         if (wledSegment.Color1) colors.Add(color1);
@@ -330,17 +337,17 @@ namespace RazerChromaWLEDConnect.WLED
                         if (wledSegment.Color3) colors.Add(color3);
                         if (wledSegment.Color4) colors.Add(color4);
 
-                        List<int[]> segmentLeds = getLEDs(colors, wledSegment.len, wledSegment.Gradient);
+                        List<int[]> segmentLeds = this.getLEDs(colors, wledSegment.len, wledSegment.Gradient);
                         foreach (int[] segmentLed in segmentLeds)
                         {
                             leds.Add(segmentLed);
                         }
                     }
-                    LEDs = leds;
+                    this.LEDs = leds;
 
                     byte[] colorBytes;
-                    colorBytes = getUDPBytesDRGB(leds);
-                    UdpClient conn = getUDPConnection();
+                    colorBytes = this.getUDPBytesDRGB(leds);
+                    UdpClient conn = this.getUDPConnection();
 
                     if (conn != null)
                     {
@@ -350,34 +357,17 @@ namespace RazerChromaWLEDConnect.WLED
             }
         }
 
-        protected byte[] getUDPBytesDRGB(List<int[]> leds)
+        protected byte[] getUDPBytesDRGB(List<int[]> leds, int timeout = 255)
         {
             byte[] colorBytes = new byte[leds.Count * 3 + 2];
             colorBytes[0] = 2;
-            colorBytes[1] = 255;
+            colorBytes[1] = (byte)timeout;
 
             for (int i = 0; i < leds.Count; i++)
             {
                 colorBytes[2 + i * 3] = (byte)leds[i][0];
                 colorBytes[3 + i * 3] = (byte)leds[i][1];
                 colorBytes[4 + i * 3] = (byte)leds[i][2];
-            }
-
-            return colorBytes;
-        }
-
-        public byte[] getUDPBytes(List<int[]> leds)
-        {
-            byte[] colorBytes = new byte[leds.Count * 4 + 2];
-            colorBytes[0] = 1;
-            colorBytes[1] = 255;
-
-            for (int i = 0; i < leds.Count; i++)
-            {
-                colorBytes[2 + i * 4] = (byte)i;
-                colorBytes[3 + i * 4] = (byte)leds[i][0];
-                colorBytes[4 + i * 4] = (byte)leds[i][1];
-                colorBytes[5 + i * 4] = (byte)leds[i][2];
             }
 
             return colorBytes;

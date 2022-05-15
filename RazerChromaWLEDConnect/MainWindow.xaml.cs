@@ -306,6 +306,22 @@ namespace RazerChromaWLEDConnect
         {
             this.appSettings.Sync = syncWithRazer;
             this.appSettings.Save();
+
+            if (syncWithRazer)
+            {
+                for (int i = 0; i < this.appSettings.Instances.Count; i++)
+                {
+                    this.appSettings.Instances[i].load();
+                }
+            } 
+            else
+            {
+                for (int i = 0; i < this.appSettings.Instances.Count; i++)
+                {
+                    this.appSettings.Instances[i].unload();
+                }
+            }
+            
         }
 
         private void syncWithRazer(object sender, RoutedEventArgs e)

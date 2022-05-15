@@ -38,5 +38,15 @@ namespace RazerChromaWLEDConnect.Lenovo
 
             this.DataContext = instance;
         }
+
+        private void checkboxEnabledChecked(object sender, RoutedEventArgs e)
+        {
+            this.instanceObject.load();
+        }
+
+        private void checkboxEnabledUnchecked(object sender, RoutedEventArgs e)
+        {
+            this.instanceObject.unload();
+        }
     }
 }

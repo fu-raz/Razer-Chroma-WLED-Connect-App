@@ -25,6 +25,13 @@ namespace RazerChromaWLEDConnect.Base
             set { _enabled = value; OnPropertyChanged("Enabled"); }
         }
 
+        private bool _isConnected = false;
+        public bool IsConnected
+        {
+            get { return _isConnected; }
+            set { _isConnected = value; OnPropertyChanged("IsConnected"); }
+        }
+
         protected int _ledCount = 30;
         public int LedCount
         {
@@ -86,6 +93,11 @@ namespace RazerChromaWLEDConnect.Base
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        protected int[] getBlack()
+        {
+            return new []{0,0,0};
         }
 
         public List<int[]> getLEDs(List<int[]> colors, int ledCount, bool gradient)
@@ -175,27 +187,27 @@ namespace RazerChromaWLEDConnect.Base
             return leds;
         }
 
-        public void turnOn()
+        public virtual void turnOn()
         {
 
         }
 
-        public void turnOff()
+        public virtual void turnOff()
         {
 
         }
 
-        public void unload()
+        public virtual void unload()
         {
 
         }
 
-        public void load()
+        public virtual void load()
         {
 
         }
 
-        public void reload()
+        public virtual void reload()
         {
             unload();
             load();

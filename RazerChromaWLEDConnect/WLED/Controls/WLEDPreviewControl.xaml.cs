@@ -67,7 +67,7 @@ namespace RazerChromaWLEDConnect
                     ConnectionStatus.Content = "Disabled";
                 } else if (!this.instanceObject.IsConnected)
                 {
-                    ConnectionStatus.Content = "Disconnected";
+                    ConnectionStatus.Content = "Offline";
                 } else if (this.instanceObject.IsConnected)
                 {
                     ConnectionStatus.Content = "Connected";

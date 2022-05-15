@@ -22,7 +22,6 @@
                     <Separator.Background>
                         <LinearGradientBrush EndPoint="1,1" StartPoint="0,0" MappingMode="RelativeToBoundingBox" Opacity="1">
                             <GradientStop Color="Black"/>
-                            <GradientStop Color="#FFDA2828" Offset="0.5"/>
                             <GradientStop Color="Black" Offset="1"/>
                         </LinearGradientBrush>
                     </Separator.Background>
