@@ -48,7 +48,7 @@ namespace RazerChromaWLEDConnect
         public void Init()
         {
             this.addLenovoInstances();
-            this.addWLEDInstances();
+            this.addControls();
 
             // Here we check if there are settings
             if (this.appSettings.RazerAppId != null && this.appSettings.RazerAppId.Length > 0)
@@ -81,7 +81,7 @@ namespace RazerChromaWLEDConnect
             }
         }
 
-        public void addWLEDInstances()
+        public void addControls()
         {
             // Clear instanced and add them again
             wledInstances.Children.Clear();
@@ -90,7 +90,10 @@ namespace RazerChromaWLEDConnect
                 for (int i = 1; i <= this.appSettings.Instances.Count; i++)
                 {
                     //WLED instance = this.appSettings.Instances[i - 1];
-                    this.addInstancePreview(i, this.appSettings.Instances[i - 1]);
+                    if (this.appSettings.Instances[i - 1].Enabled)
+                    {
+                        this.addInstancePreview(i, this.appSettings.Instances[i - 1]);
+                    }
                     this.appSettings.Instances[i - 1].load();
                 }
             }
@@ -363,6 +366,11 @@ namespace RazerChromaWLEDConnect
         {
             this.appSettings.RunAtBoot = false;
             this.appSettings.Save();
+        }
+
+        private void Show(object sender, RoutedEventArgs e)
+        {
+            this.ShowWindow();
         }
     }
 }

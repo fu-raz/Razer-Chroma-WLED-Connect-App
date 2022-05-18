@@ -1,23 +1,12 @@
 ﻿using RazerChromaWLEDConnect.Base;
-using RazerChromaWLEDConnect.WLED;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace RazerChromaWLEDConnect
+namespace RazerChromaWLEDConnect.WLED
 {
     /// TODO: There is probably a MUCH better way to do this
     /// for now I just want it to work LOL
@@ -51,7 +40,7 @@ namespace RazerChromaWLEDConnect
             }
 
             this.DataContext = instance;
-            templateGroup.Header = "WLED Instance #" + num.ToString();
+            templateGroup.Header = this.instanceObject.Name;
             this.instanceObject.load();
 
             if (this.instanceObject.Segments != null && this.instanceObject.Segments.Count > 0)
@@ -116,11 +105,6 @@ namespace RazerChromaWLEDConnect
         {
             string url = this.instanceObject.getUrl();
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-        }
-
-        private void checkboxEnableChecked(object sender, RoutedEventArgs e)
-        {
-            // this.instanceObject.load();
         }
 
         private void checkboxEnableUnchecked(object sender, RoutedEventArgs e)

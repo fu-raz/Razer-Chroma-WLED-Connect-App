@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RazerChromaWLEDConnect
+namespace RazerChromaWLEDConnect.WLED
 {
     /// TODO: There is probably a MUCH better way to do this
     /// for now I just want it to work LOL
@@ -35,7 +35,7 @@ namespace RazerChromaWLEDConnect
             InitializeComponent();
 
             this.DataContext = instance;
-            templateGroup.Header = "WLED Instance #" + num.ToString();
+            templateGroup.Header = this.instanceObject.Name;
 
             instance.PropertyChanged += Instance_PropertyChanged;
         }
@@ -72,6 +72,9 @@ namespace RazerChromaWLEDConnect
                 {
                     ConnectionStatus.Content = "Connected";
                 }
+            } else if (e.PropertyName == "Name")
+            {
+                templateGroup.Header = this.instanceObject.Name;
             }
         }
     }

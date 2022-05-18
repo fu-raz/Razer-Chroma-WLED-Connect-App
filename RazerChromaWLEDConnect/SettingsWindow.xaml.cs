@@ -10,6 +10,8 @@ using Tmds.MDns;
 using System.Linq;
 using RazerChromaWLEDConnect.Base;
 using RazerChromaWLEDConnect.WLED;
+using System.ComponentModel;
+using System;
 
 namespace RazerChromaWLEDConnect
 {
@@ -41,8 +43,17 @@ namespace RazerChromaWLEDConnect
             {
                 for (int i = 1; i <= this.appSettings.Instances.Count; i++)
                 {
+                    this.appSettings.Instances[i - 1].PropertyChanged += this.Instance_PropertyChanged;
                     this.addSettingsControl(i, this.appSettings.Instances[i - 1]);
                 }
+            }
+        }
+
+        private void Instance_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Enabled")
+            {
+                this.mainWindow.addControls();
             }
         }
 
@@ -64,6 +75,8 @@ namespace RazerChromaWLEDConnect
             this.appSettings.Save();
 
             if (shouldReInit) this.mainWindow.Init();
+
+            this.mainWindow.addControls();
             this.mainWindow.ContextMenuItemRunAtBoot.IsChecked = this.appSettings.RunAtBoot;
 
             Hide();
@@ -86,7 +99,7 @@ namespace RazerChromaWLEDConnect
             this.appSettings.Instances.Add(instance);
             this.addSettingsControl(this.appSettings.Instances.Count, instance);
             this.appSettings.Save();
-            this.mainWindow.addWLEDInstances();
+            this.mainWindow.addControls();
         }
 
         private void addInstance(object sender, RoutedEventArgs e)
@@ -113,7 +126,7 @@ namespace RazerChromaWLEDConnect
                 this.appSettings.Instances.Remove((RGBBase)instanceControl.GetInstance());
                 this.appSettings.Save();
                 wledInstances.Children.Remove(instanceControl);
-                this.mainWindow.addWLEDInstances();
+                this.mainWindow.addControls();
             }
         }
 

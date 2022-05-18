@@ -65,6 +65,13 @@ namespace RazerChromaWLEDConnect.WLED
             set { _colorTypeSegment = value; OnPropertyChanged("ColorTypeSegment"); }
         }
 
+        private string _name = "";
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; OnPropertyChanged("Name"); }
+        }
+
         protected long lastCheck = 0;
 
         protected int[] lastColor1;
@@ -127,7 +134,7 @@ namespace RazerChromaWLEDConnect.WLED
 
         public override void turnOff()
         {
-            if (Enabled && IsConnected && IsOn)
+            if (IsConnected && IsOn)
             {
                 // Get a byte list of black LEDS
                 List<int[]> blackLEDS = new List<int[]>();
@@ -158,7 +165,7 @@ namespace RazerChromaWLEDConnect.WLED
         {
             if (this.udpClient != null)
             {
-                if (IsOn) this.turnOff();
+                this.turnOff();
                 this.udpClient.Close();
                 this.udpClient.Dispose();
                 this.udpClient = null;
@@ -231,6 +238,11 @@ namespace RazerChromaWLEDConnect.WLED
                     if (this.Segments == null || this.Segments.Count != wled.state.seg.Count)
                     {
                         this.Segments = wled.state.seg;
+                    }
+
+                    if (this.Name != wled.info.name)
+                    {
+                        this.Name = wled.info.name;
                     }
 
                     this.IsConnected = true;

@@ -25,7 +25,7 @@
     </Window.Resources>
 
     <StackPanel Margin="10,9" RenderTransformOrigin="0.499,1.028">
-        <tb:TaskbarIcon IconSource="/razer-wled.ico" ToolTipText="Razer Chroma WLED Connect">
+        <tb:TaskbarIcon IconSource="/razer-wled.ico" ToolTipText="Razer Chroma WLED Connect" TrayMouseDoubleClick="Show">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Show" Click="showApplication" />
