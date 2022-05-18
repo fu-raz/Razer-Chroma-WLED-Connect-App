@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
-        Title="Razer Chroma WLED Connect" Width="347" Height="391" ResizeMode="CanResize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
+        Title="Razer Chroma WLED Connect" Width="347" Height="391" ResizeMode="CanMinimize" FontFamily="Microsoft Sans Serif" FontSize="10.667" Background="#222222" Closing="Window_Closing"
         Icon="/razer-wled.ico" StateChanged="StateChange">
     <Window.Resources>
         
@@ -13,11 +13,11 @@
             <Setter Property="Foreground" Value="#ffffff" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
-        <Style x:Key="SmallLed" TargetType="Rectangle">
-            <Setter Property="Width" Value="62" />
-            <Setter Property="Height" Value="19" />
+        <Style x:Key="SmallLed" TargetType="Ellipse">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
         </Style>
-        <Style x:Key="LargeLed" TargetType="Rectangle">
+        <Style x:Key="LargeLed" TargetType="Ellipse">
             <Setter Property="Width" Value="274" />
             <Setter Property="Height" Value="20" />
             <Setter Property="Margin" Value="0,8,0,0" />
@@ -46,10 +46,10 @@
             <Label Style="{StaticResource LedLabel}">4</Label>
         </UniformGrid>
         <UniformGrid Rows="1">
-            <Rectangle x:Name="CL2" Style="{StaticResource SmallLed}" Fill="#000000" />
-            <Rectangle x:Name="CL3" Style="{StaticResource SmallLed}" Fill="#000000" />
-            <Rectangle x:Name="CL4" Style="{StaticResource SmallLed}" Fill="#000000" />
-            <Rectangle x:Name="CL5" Style="{StaticResource SmallLed}" Fill="#000000" />
+            <Ellipse x:Name="CL2" Style="{StaticResource SmallLed}" Fill="#000000" />
+            <Ellipse x:Name="CL3" Style="{StaticResource SmallLed}" Fill="#000000" />
+            <Ellipse x:Name="CL4" Style="{StaticResource SmallLed}" Fill="#000000" />
+            <Ellipse x:Name="CL5" Style="{StaticResource SmallLed}" Fill="#000000" />
         </UniformGrid>
         <Grid Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
