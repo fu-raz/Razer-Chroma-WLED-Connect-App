@@ -79,6 +79,7 @@ namespace RazerChromaWLEDConnect.WLED
 
         private void deleteInstance(object sender, RoutedEventArgs e)
         {
+            this.instanceObject.unload();
             this.parentControl.deleteInstance();
         }
 

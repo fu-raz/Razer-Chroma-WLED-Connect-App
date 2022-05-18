@@ -37,7 +37,7 @@ namespace RazerChromaWLEDConnect.WLED
             this.DataContext = instance;
             templateGroup.Header = this.instanceObject.Name;
 
-            instance.PropertyChanged += Instance_PropertyChanged;
+            this.instanceObject.PropertyChanged += this.Instance_PropertyChanged;
         }
 
         private void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -61,7 +61,7 @@ namespace RazerChromaWLEDConnect.WLED
                             brush.GradientStops.Add(stop2);
                         }
                         Separator.Background = brush;
-                    } else
+                    } else if (this.instanceObject.LEDs.Count == 1)
                     {
                         int[] color = this.instanceObject.LEDs[0];
                         Separator.Background = new SolidColorBrush(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]));
