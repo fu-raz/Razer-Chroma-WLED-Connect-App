@@ -287,6 +287,7 @@ namespace RazerChromaWLEDConnect
         {
             this.Show();
             this.WindowState = WindowState.Normal;
+            this.Focus();
         }
 
         private void showApplication(object sender, RoutedEventArgs e)

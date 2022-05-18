@@ -46,19 +46,26 @@ namespace RazerChromaWLEDConnect.WLED
             {
                 if (this.mainWindow.WindowState != WindowState.Minimized)
                 {
-                    LinearGradientBrush brush = new LinearGradientBrush();
-                    for (int i = 0; i < this.instanceObject.LEDs.Count; i++)
+                    if (this.instanceObject.LEDs.Count > 1)
                     {
-                        int[] color = this.instanceObject.LEDs[i];
+                        LinearGradientBrush brush = new LinearGradientBrush();
+                        for (int i = 0; i < this.instanceObject.LEDs.Count; i++)
+                        {
+                            int[] color = this.instanceObject.LEDs[i];
 
-                        double offset = (double)1 / this.instanceObject.LEDs.Count * i;
-                        GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
-                        brush.GradientStops.Add(stop);
-                        double offset2 = (double)1 / this.instanceObject.LEDs.Count * (i + 1) - 0.00001;
-                        GradientStop stop2 = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset2);
-                        brush.GradientStops.Add(stop2);
+                            double offset = (double)1 / this.instanceObject.LEDs.Count * i;
+                            GradientStop stop = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset);
+                            brush.GradientStops.Add(stop);
+                            double offset2 = (double)1 / this.instanceObject.LEDs.Count * (i + 1) - 0.00001;
+                            GradientStop stop2 = new GradientStop(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]), offset2);
+                            brush.GradientStops.Add(stop2);
+                        }
+                        Separator.Background = brush;
+                    } else
+                    {
+                        int[] color = this.instanceObject.LEDs[0];
+                        Separator.Background = new SolidColorBrush(Color.FromRgb((byte)color[0], (byte)color[1], (byte)color[2]));
                     }
-                    Separator.Background = brush;
                 }
             } else if (e.PropertyName == "Enabled" || e.PropertyName == "IsConnected")
             {

@@ -321,7 +321,7 @@ namespace RazerChromaWLEDConnect.WLED
                     
                     // Get the leds for the preview window
                     List<int[]> leds = this.getLEDs(colors, this.LedCount, this.Gradient);
-                    if (!this.LEDs.SequenceEqual(leds))
+                    if (this.LEDs != null && !this.LEDs.SequenceEqual(leds))
                     {
                         this.LEDs = leds;
                     }
