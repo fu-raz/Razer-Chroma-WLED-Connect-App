@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RazerChromaWLEDConnect.Base;
+using RazerChromaWLEDConnect.WLED;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,26 +16,25 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RazerChromaWLEDConnect
+namespace RazerChromaWLEDConnect.Lenovo
 {
     /// TODO: There is probably a MUCH better way to do this
     /// for now I just want it to work LOL
-    public partial class WLEDPreviewControl : UserControl
+    public partial class LenovoKeyboardPreviewControl : UserControl
     {
-        protected WLEDInstance  instanceObject;
+        protected LenovoKeyboard instanceObject;
         protected int num;
         protected MainWindow mainWindow;
 
-        public WLEDPreviewControl(ref WLEDInstance instance, int num, MainWindow mainWindow)
+        public LenovoKeyboardPreviewControl(ref RGBSettingsInterface instance, int num, MainWindow mainWindow)
         {
-            this.instanceObject = instance;
+            this.instanceObject = (LenovoKeyboard)instance;
             this.num = num;
             this.mainWindow = mainWindow;
 
             InitializeComponent();
 
             this.DataContext = instance;
-            templateGroup.Header = "WLED Instance #" + num.ToString();
 
             instance.PropertyChanged += Instance_PropertyChanged;
         }
@@ -57,18 +58,6 @@ namespace RazerChromaWLEDConnect
                         brush.GradientStops.Add(stop2);
                     }
                     Separator.Background = brush;
-                }
-            } else if (e.PropertyName == "Enabled" || e.PropertyName == "IsConnected")
-            {
-                if (!this.instanceObject.Enabled)
-                {
-                    ConnectionStatus.Content = "Disabled";
-                } else if (!this.instanceObject.IsConnected)
-                {
-                    ConnectionStatus.Content = "Disconnected";
-                } else if (this.instanceObject.IsConnected)
-                {
-                    ConnectionStatus.Content = "Connected";
                 }
             }
         }

@@ -22,19 +22,50 @@
   <ItemGroup>
     <PackageReference Include="ChromaBroadcastSDK.NET" Version="1.0.4" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="HidApiAdapter" Version="1.0.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Management" Version="6.0.0" />
     <PackageReference Include="Tmds.MDns" Version="0.7.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="WLEDPreviewControl.xaml.cs">
+    <Compile Update="Base\Controls\RGBPreviewControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Base\Controls\RGBSettingsControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Lenovo\Controls\LenovoKeyboardPreviewControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="WLED\Controls\WLEDPreviewControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="WLEDPreviewControl.xaml">
+    <Content Update="C:\Users\rick\.nuget\packages\hidapiadapter\1.0.6\contentFiles\any\netstandard2.0\hidapi32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\rick\.nuget\packages\hidapiadapter\1.0.6\contentFiles\any\netstandard2.0\hidapi64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Base\Controls\RGBPreviewControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Base\Controls\RGBSettingsControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Lenovo\Controls\LenovoKeyboardPreviewControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="WLED\Controls\WLEDPreviewControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
