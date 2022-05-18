@@ -326,14 +326,14 @@ namespace RazerChromaWLEDConnect.WLED
                         this.LEDs = leds;
                     }
 
-                    if (shouldUpdate)
+                    if (shouldUpdate || this.hasTimedOut(60))
                     {
                         byte[] colorBytes;
 
                         
                         // Let's do some optimizing
                         // I guess if we're always going to be sending all the LEDS, we might as well use DRGB all the time
-                        colorBytes = this.getUDPBytesDRGB(leds);
+                        colorBytes = this.getUDPBytesDRGB(leds, 120);
 
                         UdpClient conn = this.getUDPConnection();
 

@@ -85,6 +85,8 @@ namespace RazerChromaWLEDConnect.Base
             set { _leds = value; OnPropertyChanged("LEDs"); }
         }
 
+        protected long lastUpdate = 0;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
@@ -98,6 +100,18 @@ namespace RazerChromaWLEDConnect.Base
         protected int[] getBlack()
         {
             return new []{0,0,0};
+        }
+
+        protected bool hasTimedOut(long seconds)
+        {
+            DateTimeOffset now = (DateTimeOffset)DateTime.UtcNow;
+            long timeStamp = now.ToUnixTimeSeconds();
+            if (timeStamp - this.lastUpdate > seconds)
+            {
+                this.lastUpdate = timeStamp;
+                return true;
+            }
+            return false;
         }
 
         public List<int[]> getLEDs(List<int[]> colors, int ledCount, bool gradient)
