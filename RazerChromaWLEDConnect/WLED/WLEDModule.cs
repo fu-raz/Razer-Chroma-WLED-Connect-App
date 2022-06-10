@@ -179,6 +179,7 @@ namespace RazerChromaWLEDConnect.WLED
 
         public override void load()
         {
+            this.lastCheck = 0;
             // Define the object we get from the JSON API
 
             var WLEDStateObject = new

@@ -146,7 +146,7 @@ namespace RazerChromaWLEDConnect
             {
                 //Start mDNS discovery
                 b.Content = "Searching... click to stop";
-                serviceBrowser.StartBrowse("_http._tcp");
+                serviceBrowser.StartBrowse(new String[] { "_hap._tcp", "_wled._tcp" });
             }
             else
             {
@@ -161,57 +161,53 @@ namespace RazerChromaWLEDConnect
             var addr = (e.Announcement.Addresses.Count >= 1) ? e.Announcement.Addresses[0] : null;
             if (addr != null)
             {
-                // Fast way to check if it's a WLED. They have no TXT data
-                if (e.Announcement.Txt.Count > 0 && e.Announcement.Txt[0] == "")
+                // Let's test if the is an actual WLED instance
+                WLEDModule testInstance = new WLEDModule();
+                testInstance.WLEDIPAddress = addr.ToString();
+                testInstance.load();
+
+                if (testInstance.IsConnected)
                 {
-                    // Let's test if the is an actual WLED instance
-                    WLEDModule testInstance = new WLEDModule();
-                    testInstance.WLEDIPAddress = addr.ToString();
-                    testInstance.load();
+                    // This is an actual WLED instance
+                    // Check if one of this is one of the existing instances
+                    bool shouldAdd = true;
 
-                    if (testInstance.IsConnected)
+                    foreach (RGBBase wi in this.appSettings.Instances)
                     {
-                        // This is an actual WLED instance
-                        // Check if one of this is one of the existing instances
-                        bool shouldAdd = true;
-
-                        foreach (RGBBase wi in this.appSettings.Instances)
+                        if (wi is WLEDModule)
                         {
-                            if (wi is WLEDModule)
+                            WLEDModule wLED = (WLEDModule)wi;
+                            // If we already have this mac address,
+                            // but the IP is different. We should change it
+                            if (wLED.MacAddress == testInstance.MacAddress)
                             {
-                                WLEDModule wLED = (WLEDModule)wi;
-                                // If we already have this mac address,
-                                // but the IP is different. We should change it
-                                if (wLED.MacAddress == testInstance.MacAddress)
+                                shouldAdd = false;
+
+                                if (wLED.WLEDIPAddress != testInstance.WLEDIPAddress)
                                 {
-                                    shouldAdd = false;
-
-                                    if (wLED.WLEDIPAddress != testInstance.WLEDIPAddress)
-                                    {
-                                        wLED.WLEDIPAddress = testInstance.WLEDIPAddress;
-                                    }
-
-                                    if (wLED.WLEDPort != testInstance.WLEDPort)
-                                    {
-                                        wLED.WLEDPort = testInstance.WLEDPort;
-                                    }
-
-                                    wLED.Segments = testInstance.Segments;
-
-                                    // We found it, so BREAK BREAK!
-                                    break;
+                                    wLED.WLEDIPAddress = testInstance.WLEDIPAddress;
                                 }
+
+                                if (wLED.WLEDPort != testInstance.WLEDPort)
+                                {
+                                    wLED.WLEDPort = testInstance.WLEDPort;
+                                }
+
+                                wLED.Segments = testInstance.Segments;
+
+                                // We found it, so BREAK BREAK!
+                                break;
                             }
                         }
-
-                        if (shouldAdd)
-                        {
-                            this.addInstance(testInstance);
-                        }
-
-                        // Save the new or changed settings
-                        this.appSettings.Save();
                     }
+
+                    if (shouldAdd)
+                    {
+                        this.addInstance(testInstance);
+                    }
+
+                    // Save the new or changed settings
+                    this.appSettings.Save();
                 }
                 
                 
