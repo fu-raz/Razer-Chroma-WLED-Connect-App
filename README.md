@@ -14,7 +14,9 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 * Either:
   * Visual Studio 2022 Community Edition (The free one) to open this solution, download the packages via NuGet and build it for your computer
   * Install the required packages with NuGet
-  * Don't forget to do this for the 32 and 64bit file: ![50458730-72e65780-0976-11e9-9d46-1d4874083586](https://user-images.githubusercontent.com/5355154/168314251-287d0484-bfd3-491e-b4a2-8645e1bf16f0.png)
+  * Don't forget to do this for the 32 and 64bit file:
+
+  ![50458730-72e65780-0976-11e9-9d46-1d4874083586](https://user-images.githubusercontent.com/5355154/168314251-287d0484-bfd3-491e-b4a2-8645e1bf16f0.png)
 * Or:
   * Download the release from the release tab
 
