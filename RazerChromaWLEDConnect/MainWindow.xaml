@@ -38,7 +38,7 @@
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
-        <Label HorizontalAlignment="Center" Style="{DynamicResource Labels}">Razer Chroma WLED Connect</Label>
+        <Label HorizontalAlignment="Center" Style="{DynamicResource Labels}" FontWeight="Bold">Razer Chroma WLED Connect</Label>
         <UniformGrid Rows="1">
             <Label Style="{StaticResource LedLabel}">1</Label>
             <Label Style="{StaticResource LedLabel}">2</Label>
@@ -72,5 +72,6 @@
             <StackPanel x:Name="wledInstances">
             </StackPanel>
         </ScrollViewer>
+        <Label FontWeight="Bold" HorizontalAlignment="Center" Foreground="#FF868686" Cursor="Hand" MouseUp="about">I made this</Label>
     </StackPanel>
 </Window>

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using HidApiAdapter;
 using RazerChromaWLEDConnect.Base;
 using RazerChromaWLEDConnect.WLED;
+using System.Diagnostics;
 
 namespace RazerChromaWLEDConnect
 {
@@ -372,6 +373,11 @@ namespace RazerChromaWLEDConnect
         private void Show(object sender, RoutedEventArgs e)
         {
             this.ShowWindow();
+        }
+
+        private void about(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("https://github.com/fu-raz/Razer-Chroma-WLED-Connect-App") { UseShellExecute = true });
         }
     }
 }
