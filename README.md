@@ -9,13 +9,16 @@ As a sort of proof-of-concept I wanted to connect Razer Synapse to my WLED addre
 
 ## What do you need?
 
-* A valid working Razer App Id. You'll probably end up using another brand's app id. Be aware that I don't know if you can use the same id multiple times. So to be safe, use one of a brand you're not actually using in Razer Synapse
+* A valid working Razer App Id. You'll probably end up using another brand's app id. Be aware that I don't know if you can use the same id multiple times. So to be safe, use one of a brand you're not actually using in Razer Synapse. I can’t provide you with a working one, but maybe you can borrow one from the OpenChromaConnect ChromaBroadcastAPI (inc/RzChromaBroadcastAPIDefines.h) header file (use google).
 * A WLED device with at least version 0.11.0. We use JSON commands over UDP, which was added in that version
-* Visual Studio 2022 Community Edition (The free one) to open this solution, download the packages via NuGet and build it for your computer
-* Install the required packages with NuGet
-* Don't forget to do this for the 32 and 64bit file:
+* Either:
+  * Visual Studio 2022 Community Edition (The free one) to open this solution, download the packages via NuGet and build it for your computer
+  * Install the required packages with NuGet
+  * Don't forget to do this for the 32 and 64bit file:
 
-![50458730-72e65780-0976-11e9-9d46-1d4874083586](https://user-images.githubusercontent.com/5355154/168314251-287d0484-bfd3-491e-b4a2-8645e1bf16f0.png)
+  ![50458730-72e65780-0976-11e9-9d46-1d4874083586](https://user-images.githubusercontent.com/5355154/168314251-287d0484-bfd3-491e-b4a2-8645e1bf16f0.png)
+* Or:
+  * Download the release from the release tab
 
 
 ## What does it do?
