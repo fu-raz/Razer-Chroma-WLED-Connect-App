@@ -73,6 +73,6 @@
             </StackPanel>
         </ScrollViewer>
         <Label FontWeight="Bold" HorizontalAlignment="Center" Foreground="#FF868686" Cursor="Hand" MouseUp="about">I made this</Label>
-        <Label HorizontalAlignment="Center" Foreground="#FF868686" FontSize="8">v0.0.1</Label>
+        <Label HorizontalAlignment="Center" Foreground="#FF868686" FontSize="8">v0.0.2</Label>
     </StackPanel>
 </Window>

@@ -52,7 +52,12 @@ namespace RazerChromaWLEDConnect
             this.addControls();
 
             // Here we check if there are settings
-            if (this.appSettings.RazerAppId != null && this.appSettings.RazerAppId.Length > 0)
+
+            if (this.appSettings.RazerAppId == null || this.appSettings.RazerAppId.Length == 0)
+            {
+                UpdateLabelRazerState("No Razer App Id");
+            }
+            else if ( this.appSettings.RazerAppId.Length > 0 && Guid.TryParse(this.appSettings.RazerAppId, out Guid guid))
             {
                 // TODO: Make this optional
                 if (this.appSettings.RunAtBoot) Hide();
@@ -62,7 +67,7 @@ namespace RazerChromaWLEDConnect
                 RzChromaBroadcastAPI.UnInit();
 
                 // Initialize the Chrome Broadcast connection
-                RzResult lResult = RzChromaBroadcastAPI.Init(Guid.Parse(this.appSettings.RazerAppId));
+                RzResult lResult = RzChromaBroadcastAPI.Init(guid);
                 if (lResult == RzResult.Success)
                 {
                     // Init successful
@@ -78,7 +83,7 @@ namespace RazerChromaWLEDConnect
             }
             else
             {
-                UpdateLabelRazerState("No Razer App Id");
+                UpdateLabelRazerState("Razer App Id invalid");
             }
         }
 
